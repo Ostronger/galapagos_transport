@@ -23,10 +23,20 @@ export const typeDefs = gql`
     nom: String!
   }
 
+  type Trajet {
+    id: ID!
+    portDepart: Port!
+    portArrivee: Port!
+    distanceKm: Float!
+    dureeMinutes: Int!
+}
+
   type Query {
     _health: String!
     clients: [Client!]!
     client(id: ID!): Client
     ports: [Port!]!
+    trajets: [Trajet!]!
+    trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
   }
 `;

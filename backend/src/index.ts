@@ -8,6 +8,7 @@ import { connectMongo } from "./config/mongo.js";
 import { ClientRepository } from "./datasources/mongo/clientRepository.js";
 import { getNeo4jSession } from "./config/neo4j.js";
 import { PortRepository } from "./datasources/neo4j/portRepository.js";
+import { TrajetRepository } from "./datasources/neo4j/trajetRepository.js";
 
 async function startServer() {
   console.log("Démarrage du serveur GraphQL...");
@@ -19,6 +20,7 @@ async function startServer() {
 
     const clientRepository = new ClientRepository(mongoDb);
     const portRepository = new PortRepository(getNeo4jSession);
+    const trajetRepository = new TrajetRepository(getNeo4jSession);
 
     const server = new ApolloServer({
       typeDefs,
@@ -31,6 +33,7 @@ async function startServer() {
       context: async () => ({
         clientRepository,
         portRepository,
+        trajetRepository,
       }),
     });
 
