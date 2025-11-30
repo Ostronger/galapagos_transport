@@ -1,0 +1,14 @@
+[
+  {
+    "id": "CMD-001",
+    "clientId": "CLI-001",
+    "date": "2025-01-05T10:30:00Z",
+    "caisses": ["CAI-001", "CAI-002"]
+  },
+  {
+    "id": "CMD-002",
+    "clientId": "CLI-003",
+    "date": "2025-01-10T14:00:00Z",
+    "caisses": ["CAI-003"]
+  }
+]
