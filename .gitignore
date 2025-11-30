@@ -1,0 +1,8 @@
+# Dossiers systèmes
+.DS_Store
+
+# Dossiers node_modules globaux
+**/node_modules/
+
+# Fichiers environment (ne jamais commit)
+**/.env

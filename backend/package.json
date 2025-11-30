@@ -1,0 +1,23 @@
+{
+  "name": "galapagos-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+  "build": "tsc",
+  "start": "node dist/index.js"
+ },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6",
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.8.0",
+    "neo4j-driver": "^5.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "ts-node-dev": "^2.0.0",
+    "@types/node": "^22.7.4"
+  }
+}
