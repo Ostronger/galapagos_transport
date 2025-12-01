@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Galapagos Transport — Frontend</title>
+
   <link rel="stylesheet" href="style.css" />
+
   <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
@@ -12,32 +14,44 @@
     crossorigin=""
   />
 </head>
+
 <body>
 
   <h1>Galapagos Transport</h1>
 
+  <!-- === Carte en premier === -->
+  <section>
+    <h2>Carte (Ports + Trajets + Hydravions)</h2>
+    <button id="loadPorts">Afficher les ports</button>
+    <button id="loadTrajets">Afficher les trajets</button>
+    <button id="loadHydravions">Afficher les hydravions</button>
+    <div id="map"></div>
+  </section>
+
+  <!-- === Santé du backend === -->
   <section>
     <h2>Tester la connexion au backend</h2>
     <button id="checkHealth">Vérifier Backend</button>
     <p id="healthResult"></p>
   </section>
 
+  <!-- === Liste des ports === -->
   <section>
     <h2>Liste des ports</h2>
-    <button id="loadPorts">Charger les ports</button>
     <ul id="portsList"></ul>
   </section>
 
+  <!-- === Liste des hydravions === -->
+  <section>
+    <h2>Liste des hydravions</h2>
+    <ul id="hydravionsList"></ul>
+  </section>
+
+  <!-- === Liste des clients === -->
   <section>
     <h2>Liste des clients</h2>
     <button id="loadClients">Charger les clients</button>
     <ul id="clientsList"></ul>
-  </section>
-
-  <!-- Nouvelle section carte -->
-  <section>
-    <h2>Carte des ports</h2>
-    <div id="map"></div>
   </section>
 
   <!-- Leaflet JS -->
@@ -46,6 +60,9 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
+
+  <!-- Votre script -->
   <script src="script.js"></script>
+
 </body>
 </html>

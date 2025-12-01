@@ -1,6 +1,15 @@
 import { gql } from "graphql-tag";
 
 export const typeDefs = gql`
+ type Hydravion {
+    id: ID!
+    modele: String!
+    capacite: Int!
+    consommation: Float!
+    etat: String!
+    positionPort: Port
+  }
+
  type Coordonnees {
     latitude: Float!
     longitude: Float!
@@ -38,5 +47,6 @@ export const typeDefs = gql`
     ports: [Port!]!
     trajets: [Trajet!]!
     trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
+    hydravions: [Hydravion!]!
   }
 `;

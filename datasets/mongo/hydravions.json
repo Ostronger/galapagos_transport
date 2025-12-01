@@ -1,0 +1,32 @@
+[
+  {
+    "id": "HYD-001",
+    "modele": "Twin Otter DHC-6",
+    "capacite": 20,
+    "consommation": 4.2
+  },
+  {
+    "id": "HYD-002",
+    "modele": "Cessna Caravan 208",
+    "capacite": 15,
+    "consommation": 3.5
+  },
+  {
+    "id": "HYD-003",
+    "modele": "Grumman G-21 Goose",
+    "capacite": 12,
+    "consommation": 3.9
+  },
+  {
+    "id": "HYD-004",
+    "modele": "Kodiak 100 Amphibian",
+    "capacite": 18,
+    "consommation": 4.0
+  },
+  {
+    "id": "HYD-005",
+    "modele": "De Havilland Canada DHC-3 Otter",
+    "capacite": 16,
+    "consommation": 4.1
+  }
+]

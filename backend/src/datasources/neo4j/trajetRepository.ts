@@ -7,18 +7,26 @@ export type TrajetNeo4j = {
   portDepart: {
     id: string;
     nom: string;
-    latitude: number | null;
-    longitude: number | null;
-    ileId: string;
-    ileNom: string;
+    coordonnees: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+    ile: {
+      id: string;
+      nom: string;
+    };
   };
   portArrivee: {
     id: string;
     nom: string;
-    latitude: number | null;
-    longitude: number | null;
-    ileId: string;
-    ileNom: string;
+    coordonnees: {
+      latitude: number | null;
+      longitude: number | null;
+    };
+    ile: {
+      id: string;
+      nom: string;
+    };
   };
 };
 
@@ -63,18 +71,26 @@ export class TrajetRepository {
           portDepart: {
             id: p1.properties.id as string,
             nom: p1.properties.nom as string,
-            latitude: (p1.properties.latitude as number) ?? null,
-            longitude: (p1.properties.longitude as number) ?? null,
-            ileId: i1.properties.id as string,
-            ileNom: i1.properties.nom as string,
+            coordonnees: {
+              latitude: (p1.properties.latitude as number) ?? null,
+              longitude: (p1.properties.longitude as number) ?? null,
+            },
+            ile: {
+              id: i1.properties.id as string,
+              nom: i1.properties.nom as string,
+            },
           },
           portArrivee: {
             id: p2.properties.id as string,
             nom: p2.properties.nom as string,
-            latitude: (p2.properties.latitude as number) ?? null,
-            longitude: (p2.properties.longitude as number) ?? null,
-            ileId: i2.properties.id as string,
-            ileNom: i2.properties.nom as string,
+            coordonnees: {
+              latitude: (p2.properties.latitude as number) ?? null,
+              longitude: (p2.properties.longitude as number) ?? null,
+            },
+            ile: {
+              id: i2.properties.id as string,
+              nom: i2.properties.nom as string,
+            },
           },
         };
       });
@@ -122,18 +138,26 @@ export class TrajetRepository {
           portDepart: {
             id: p1.properties.id as string,
             nom: p1.properties.nom as string,
-            latitude: (p1.properties.latitude as number) ?? null,
-            longitude: (p1.properties.longitude as number) ?? null,
-            ileId: i1.properties.id as string,
-            ileNom: i1.properties.nom as string,
+            coordonnees: {
+              latitude: (p1.properties.latitude as number) ?? null,
+              longitude: (p1.properties.longitude as number) ?? null,
+            },
+            ile: {
+              id: i1.properties.id as string,
+              nom: i1.properties.nom as string,
+            },
           },
           portArrivee: {
             id: p2.properties.id as string,
             nom: p2.properties.nom as string,
-            latitude: (p2.properties.latitude as number) ?? null,
-            longitude: (p2.properties.longitude as number) ?? null,
-            ileId: i2.properties.id as string,
-            ileNom: i2.properties.nom as string,
+            coordonnees: {
+              latitude: (p2.properties.latitude as number) ?? null,
+              longitude: (p2.properties.longitude as number) ?? null,
+            },
+            ile: {
+              id: i2.properties.id as string,
+              nom: i2.properties.nom as string,
+            },
           },
         };
       });
