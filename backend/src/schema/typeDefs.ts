@@ -1,4 +1,4 @@
-import { gql } from "graphql-tag";
+import { gql } from "graphql-tag"; // Importer la fonction gql pour définir le schéma GraphQL
 
 export const typeDefs = gql`
  type Hydravion {
@@ -38,7 +38,14 @@ export const typeDefs = gql`
     portArrivee: Port!
     distanceKm: Float!
     dureeMinutes: Int!
-}
+  }
+    type Locker {
+    id: ID!
+    nom: String!
+    capacite: Int!
+    occupe: Int!
+    plein: Boolean!
+  }
 
   type Query {
     _health: String!
@@ -48,5 +55,6 @@ export const typeDefs = gql`
     trajets: [Trajet!]!
     trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
     hydravions: [Hydravion!]!
+    lockers: [Locker!]!
   }
 `;
