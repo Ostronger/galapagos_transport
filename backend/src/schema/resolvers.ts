@@ -2,7 +2,7 @@ import type { ClientRepository } from "../datasources/mongo/clientRepository.js"
 import type { PortRepository } from "../datasources/neo4j/portRepository.js";
 import type { TrajetRepository } from "../datasources/neo4j/trajetRepository.js";
 import type { Hydravion, HydravionRepository } from "../datasources/mongo/hydravionRepository.js";
-import type { HydravionNeo4jRepository } from "../datasources/neo4j/hydravionNeo4jRepository.js";
+import type { HydravionNeo4jRepository } from "../datasources/neo4j/hydravionRepository.js";
 import type { LockerRepository } from "../datasources/mongo/lockerRepository.js";
 
 
@@ -37,7 +37,7 @@ export const resolvers = {
       return context.trajetRepository.findAll(); // Récupérer tous les trajets
     },
 
-    hydravions: async (_parent: unknown, _args: unknown, context: Context) => { 
+    hydravions: async (_parent: unknown, _args: unknown, context: Context) => {
       // Récupérer les hydravions en combinant les données de MongoDB et Neo4j
       const [mongoHydras, neo4jHydras] = await Promise.all([ // exécuter les deux requêtes en parallèle
         context.hydravionRepository.findAll(),
@@ -49,7 +49,7 @@ export const resolvers = {
 
         return mongoHydras.map((h: Hydravion) => {
             const extra = byId.get(h.id);
-        
+
             return {
                 id: h.id,
                 modele: h.modele,

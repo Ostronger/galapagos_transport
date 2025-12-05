@@ -10,7 +10,7 @@ import { getNeo4jSession } from "./config/neo4j.js";
 import { PortRepository } from "./datasources/neo4j/portRepository.js";
 import { TrajetRepository } from "./datasources/neo4j/trajetRepository.js";
 import { HydravionRepository } from "./datasources/mongo/hydravionRepository.js";
-import { HydravionNeo4jRepository } from "./datasources/neo4j/hydravionNeo4jRepository.js";
+import { HydravionNeo4jRepository } from "./datasources/neo4j/hydravionRepository.js";
 import { LockerRepository } from "./datasources/mongo/lockerRepository.js";
 
 async function startServer() {
@@ -22,7 +22,7 @@ async function startServer() {
     console.log("✅ MongoDB connecté avec succès");
 
     // Initialisation des repositories
-    const clientRepository = new ClientRepository(mongoDb); 
+    const clientRepository = new ClientRepository(mongoDb);
     const portRepository = new PortRepository(getNeo4jSession);
     const trajetRepository = new TrajetRepository(getNeo4jSession);
     const hydravionRepository = new HydravionRepository(mongoDb);

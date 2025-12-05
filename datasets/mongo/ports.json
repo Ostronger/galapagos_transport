@@ -1,0 +1,11 @@
+{
+  "id": "PORT-001",
+  "nom": "XXX",
+  "ile": "",
+  "coordonnees": {
+    "latitude": 0.0,
+    "longitude": 0.0
+  },
+  "lockers-id": "LOC-001",
+  "capaciteHydravions": 1
+}
