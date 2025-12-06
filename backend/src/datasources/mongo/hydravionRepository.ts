@@ -1,11 +1,20 @@
 import type { Db } from "mongodb";
 
-export type Hydravion = {
+export interface Hydravion {
   id: string;
   modele: string;
-  capacite: number;
-  consommation: number;
-};
+  capaciteActuelle: number;
+  capaciteMax: number;
+  consommationKm: number;
+  niveauCarburant: number;
+  niveauCarburantMax: number;
+  etat: string;
+  positionPortId?: string;
+  positionGPS?: {
+    latitude: number;
+    longitude: number;
+  };
+}
 
 export class HydravionRepository {
   private collection;
@@ -14,14 +23,11 @@ export class HydravionRepository {
     this.collection = db.collection("hydravions");
   }
 
-  async findAll(): Promise<Hydravion[]> {
-    const docs = await this.collection.find().toArray();
+  async findAll() {
+    return this.collection.find().toArray();
+  }
 
-    return docs.map((doc) => ({
-      id: doc.id,
-      modele: doc.modele,
-      capacite: doc.capacite,
-      consommation: doc.consommation,
-    }));
+  async findById(id: string) {
+    return this.collection.findOne({ id });
   }
 }

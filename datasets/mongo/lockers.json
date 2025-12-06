@@ -1,32 +1,32 @@
 [
   {
     "id": "LOC-001",
-    "etat": false,
-    "portId": "PORT-001"
+    "estVide": false,
+    "contenu": "CAI-001"
   },
   {
     "id": "LOC-002",
-    "etat": true,
-    "portId": "PORT-001"
+    "estVide": true,
+    "contenu": null
   },
   {
     "id": "LOC-003",
-    "etat": false,
-    "portId": "PORT-002"
+    "estVide": false,
+    "contenu": "CAI-002"
   },
   {
     "id": "LOC-004",
-    "etat": false,
-    "portId": "PORT-002"
+    "estVide": false,
+    "contenu": "CAI-002"
   },
   {
     "id": "LOC-005",
-    "etat": true,
-    "portId": "PORT-003"
+    "estVide": true,
+    "contenu": null
   },
   {
     "id": "LOC-006",
-    "etat": false,
-    "portId": "PORT-003"
+    "estVide": false,
+    "contenu": "CAI-003"
   }
 ]

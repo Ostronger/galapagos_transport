@@ -22,13 +22,14 @@ async function loadData() {
     const datasetsPath = join(__dirname, "../../../datasets/mongo");
 
     const collections = [
+      "caisses",
       "clients",
-      // "produits",
-      "lockers",
-      // "caisses",
-      // "commandes",
+      "commandes",
       "hydravions",
-      // "livraisons",
+      "iles",
+      "lockers",
+      "ports",
+      "produits"
     ];
 
     for (const collectionName of collections) {
@@ -55,17 +56,26 @@ async function loadData() {
     }
 
     // Charger l'entrepôt (fichier unique, pas un tableau)
-    // console.log(`\n🏭 Chargement de l'entrepôt...`);
-    // const entrepotFilePath = join(datasetsPath, "entrepot.json");
-    // try {
-    //   const entrepotData = JSON.parse(readFileSync(entrepotFilePath, "utf-8"));
-    //   await db.collection("entrepot").deleteMany({});
-    //   console.log(`  ↳ Collection entrepot vidée`);
-    //   await db.collection("entrepot").insertOne(entrepotData);
-    //   console.log(`  ✅ Entrepôt principal inséré`);
-    // } catch (err: any) {
-    //   console.error(`  ❌ Erreur pour l'entrepôt:`, err.message);
-    // }
+    console.log(`\n🏭 Chargement de l'entrepôt...`);
+    const entrepotFilePath = join(datasetsPath, "entrepot.json");
+    try {
+      const entrepotData = JSON.parse(readFileSync(entrepotFilePath, "utf-8"));
+      await db.collection("entrepots").deleteMany({});
+      console.log(`  ↳ Collection entrepots vidée`);
+      if (Array.isArray(entrepotData)) {
+        if (entrepotData.length > 0) {
+          await db.collection("entrepots").insertMany(entrepotData);
+          console.log(`  ✅ ${entrepotData.length} entrepôt(s) inséré(s)`);
+        } else {
+          console.log(`  ⚠️ Aucune donnée dans entrepot.json`);
+        }
+      } else {
+        await db.collection("entrepots").insertOne(entrepotData);
+        console.log(`  ✅ Entrepôt principal inséré`);
+      }
+    } catch (err: any) {
+      console.error(`  ❌ Erreur pour l'entrepôt:`, err.message);
+    }
 
     console.log("\n🎉 Chargement des données terminé !");
   } catch (err) {

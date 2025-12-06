@@ -15,11 +15,12 @@ export const typeDefs = gql`
     etat: EtatHydravion!
     positionPort: Port
     positionGPS: Coordonnees
+    caisses: [String!]
   }
 
   enum EtatHydravion {
     PORT
-    VOL
+    EN_VOL
     ENTREPOT
   }
 
@@ -49,7 +50,7 @@ export const typeDefs = gql`
     ile: Ile!
     capaciteHydravions: Int!
     capaciteHydravionsMax: Int!
-    lockers: [Locker!]!
+    lockers: [String!]! # tableau d'identifiants
     nbLockersVides: Int!
   }
 
@@ -100,6 +101,7 @@ export const typeDefs = gql`
   }
 
   type Query {
+    _health: String!
 
     hydravions: [Hydravion!]!
     ports: [Port!]!
@@ -117,13 +119,12 @@ export const typeDefs = gql`
     getLockersParPort(portId: ID!, filtreVide: Boolean): [Locker!]!
 
 
-    _health: String!
-    clients: [Client!]!
-    client(id: ID!): Client
-    ports: [Port!]!
-    trajets: [Trajet!]!
-    trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
-    hydravions: [Hydravion!]!
-    lockers: [Locker!]!
+#    clients: [Client!]!
+#    client(id: ID!): Client
+#    ports: [Port!]!
+#    trajets: [Trajet!]!
+#    trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
+#    hydravions: [Hydravion!]!
+#    lockers: [Locker!]!
   }
 `;

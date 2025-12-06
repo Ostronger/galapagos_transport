@@ -2,31 +2,66 @@
   {
     "id": "HYD-001",
     "modele": "Twin Otter DHC-6",
-    "capacite": 20,
-    "consommation": 4.2
+    "capaciteActuelle": 10,
+    "capaciteMax": 20,
+    "consommationKm": 4.2,
+    "niveauCarburant": 200,
+    "niveauCarburantMax": 400,
+    "etat": "PORT",
+    "positionPort": "PORT-001",
+    "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
+    "caisses": null
   },
   {
     "id": "HYD-002",
     "modele": "Cessna Caravan 208",
-    "capacite": 15,
-    "consommation": 3.5
+    "capaciteActuelle": 5,
+    "capaciteMax": 15,
+    "consommationKm": 3.5,
+    "niveauCarburant": 150,
+    "niveauCarburantMax": 300,
+    "etat": "EN_VOL",
+    "positionPort": "PORT-002",
+    "positionGPS": { "latitude": -1.0, "longitude": -91.0 },
+    "caisses": ["CAI-001", "CAI-002"]
   },
   {
     "id": "HYD-003",
     "modele": "Grumman G-21 Goose",
-    "capacite": 12,
-    "consommation": 3.9
+    "capaciteActuelle": 8,
+    "capaciteMax": 12,
+    "consommationKm": 3.9,
+    "niveauCarburant": 100,
+    "niveauCarburantMax": 250,
+    "etat": "PORT",
+    "positionPort": "PORT-001",
+    "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
+    "caisses": ["CAI-003"]
   },
   {
     "id": "HYD-004",
     "modele": "Kodiak 100 Amphibian",
-    "capacite": 18,
-    "consommation": 4.0
+    "capaciteActuelle": 15,
+    "capaciteMax": 18,
+    "consommationKm": 4.0,
+    "niveauCarburant": 180,
+    "niveauCarburantMax": 360,
+    "etat": "EN_VOL",
+    "positionPort": "PORT-003",
+    "positionGPS": { "latitude": -1.05, "longitude": -91.05 },
+    "caisses": null
   },
   {
     "id": "HYD-005",
     "modele": "De Havilland Canada DHC-3 Otter",
-    "capacite": 16,
-    "consommation": 4.1
+    "capaciteActuelle": 12,
+    "capaciteMax": 16,
+    "consommationKm": 4.1,
+    "niveauCarburant": 220,
+    "niveauCarburantMax": 440,
+    "etat": "PORT",
+    "positionPort": "PORT-001",
+    "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
+    "caisses": null
   }
 ]

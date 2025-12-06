@@ -1,9 +1,9 @@
 [
   {
     "id": "CMD-001",
-    "clientId": "CLI-001",
     "date": "2025-01-05T10:30:00Z",
-    "caisses": ["CAI-001", "CAI-002"]
+    "produits": ["PROD-001"],
+    "statut": "LIVREE"
   },
   {
     "id": "CMD-002",

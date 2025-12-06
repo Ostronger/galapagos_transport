@@ -1,20 +1,17 @@
 [
   {
     "id": "CAI-001",
-    "commandeId": "CMD-001",
-    "produitId": "PROD-001",
-    "lockerId": "LOC-002"
+    "nom": "Kit prélèvement eau",
+    "client": "CLI-001"
   },
   {
     "id": "CAI-002",
-    "commandeId": "CMD-001",
-    "produitId": "PROD-004",
-    "lockerId": null
+    "nom": "Kit prélèvement air",
+    "client": "CLI-002"
   },
   {
     "id": "CAI-003",
-    "commandeId": "CMD-002",
-    "produitId": "PROD-002",
-    "lockerId": "LOC-003"
+    "nom": "Kit prélèvement sol",
+    "client": "CLI-003"
   }
 ]

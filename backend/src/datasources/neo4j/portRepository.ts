@@ -1,33 +1,64 @@
-import type { Session } from "neo4j-driver";
+import type { Driver } from "neo4j-driver";
 
-export class PortRepository {
-  constructor(private readonly sessionFactory: () => Session) {}
+export class PortNeo4jRepository {
+  private driver: Driver;
+
+  constructor(driver: Driver) {
+    this.driver = driver;
+  }
 
   async findAll() {
-    const session = this.sessionFactory();
+    const session = this.driver.session();
     try {
       const result = await session.run(`
-        MATCH (p:Port)-[:SE_TROUVE_SUR]->(i:Ile)
+        MATCH (p:Port)
+        OPTIONAL MATCH (p)-[:SITUE_SUR]->(i:Ile)
         RETURN p, i
       `);
 
       return result.records.map((record) => {
-        const p = record.get("p");
-        const i = record.get("i");
-
+        const port = record.get("p").properties;
+        const ile = record.get("i")?.properties;
         return {
-          id: p.properties.id,
-          nom: p.properties.nom,
+          ...port,
           coordonnees: {
-            latitude: p.properties.latitude,
-            longitude: p.properties.longitude,
+            latitude: port.latitude,
+            longitude: port.longitude,
           },
-          ile: {
-            id: i.properties.id,
-            nom: i.properties.nom,
-          },
+          ile: ile ? { ...ile } : null,
         };
       });
+    } finally {
+      await session.close();
+    }
+  }
+
+  async findById(id: string) {
+    const session = this.driver.session();
+    try {
+      const result = await session.run(
+        `
+        MATCH (p:Port {id: $id})
+        OPTIONAL MATCH (p)-[:SITUE_SUR]->(i:Ile)
+        RETURN p, i
+      `,
+        { id }
+      );
+
+      if (result.records.length === 0) return null;
+
+      const record = result.records[0];
+      const port = record.get("p").properties;
+      const ile = record.get("i")?.properties;
+
+      return {
+        ...port,
+        coordonnees: {
+          latitude: port.latitude,
+          longitude: port.longitude,
+        },
+        ile: ile ? { ...ile } : null,
+      };
     } finally {
       await session.close();
     }

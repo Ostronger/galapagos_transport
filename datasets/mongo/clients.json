@@ -1,7 +1,8 @@
 [
   {
     "id": "CLI-001",
-    "nom": "Dr Elena Ramirez"
+    "nom": "Dr Elena Ramirez",
+    "historiqueCommandes": ["CMD-001"]
   },
   {
     "id": "CLI-002",

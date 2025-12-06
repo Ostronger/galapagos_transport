@@ -2,51 +2,51 @@
   {
     "id": "PROD-001",
     "nom": "Kit de prélèvement d'eau",
-    "stock": 50
+    "quantiteStocks": 50
   },
   {
     "id": "PROD-002",
     "nom": "Capteur de salinité",
-    "stock": 30
+    "quantiteStocks": 30
   },
   {
     "id": "PROD-003",
     "nom": "Capteur de température marine",
-    "stock": 40
+    "quantiteStocks": 40
   },
   {
     "id": "PROD-004",
     "nom": "Balise GPS pour tortues marines",
-    "stock": 15
+    "quantiteStocks": 15
   },
   {
     "id": "PROD-005",
     "nom": "Drone de surveillance côtière",
-    "stock": 8
+    "quantiteStocks": 8
   },
   {
     "id": "PROD-006",
     "nom": "Kit de prélèvement de sol",
-    "stock": 25
+    "quantiteStocks": 25
   },
   {
     "id": "PROD-007",
     "nom": "Capteur de qualité de l'air",
-    "stock": 20
+    "quantiteStocks": 20
   },
   {
     "id": "PROD-008",
     "nom": "Caméra sous-marine",
-    "stock": 12
+    "quantiteStocks": 12
   },
   {
     "id": "PROD-009",
     "nom": "Station météo portable",
-    "stock": 10
+    "quantiteStocks": 10
   },
   {
     "id": "PROD-010",
     "nom": "Kit d'analyse de phytoplancton",
-    "stock": 18
+    "quantiteStocks": 18
   }
 ]
