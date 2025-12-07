@@ -33,5 +33,33 @@
     "date": "2025-01-18T11:20:00Z",
     "caisses": ["CAI-006"],
     "statut": "EN_COURS"
+  },
+  {
+    "id": "CMD-006",
+    "clientId": "CLI-002",
+    "date": "2025-01-18T13:00:00Z",
+    "caisses": ["CAI-007", "CAI-008"],
+    "statut": "EN_COURS"
+  },
+  {
+    "id": "CMD-007",
+    "clientId": "CLI-001",
+    "date": "2025-01-20T08:30:00Z",
+    "caisses": ["CAI-009"],
+    "statut": "PLANIFIEE"
+  },
+  {
+    "id": "CMD-008",
+    "clientId": "CLI-003",
+    "date": "2025-01-22T14:00:00Z",
+    "caisses": ["CAI-010", "CAI-011"],
+    "statut": "EN_COURS"
+  },
+  {
+    "id": "CMD-009",
+    "clientId": "CLI-002",
+    "date": "2025-01-25T07:00:00Z",
+    "caisses": ["CAI-012"],
+    "statut": "LIVREE"
   }
 ]

@@ -31,7 +31,7 @@ export class PortRepository {
 
   async findAll() {
     const ports = await this.collection.find().toArray();
-    return Promise.all(ports.map(port => this._populateIle(port)));
+    return Promise.all(ports.map((port) => this._populateIle(port)));
   }
 
   async findById(id: string) {

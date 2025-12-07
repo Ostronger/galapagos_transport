@@ -110,3 +110,198 @@ li {
   margin: 8px 0;
   font-size: 15px;
 }
+
+/* === Formulaire d'optimisation === */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.form-group select:focus {
+  border-color: #1abc9c;
+  outline: none;
+}
+
+/* === Liste des livraisons === */
+.livraisons-list {
+  max-height: 350px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+}
+
+.livraison-item {
+  background: white;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border-left: 4px solid #95a5a6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.livraison-item:last-child {
+  margin-bottom: 0;
+}
+
+.livraison-livree {
+  border-left-color: #27ae60;
+}
+
+.livraison-en_cours {
+  border-left-color: #f39c12;
+}
+
+.livraison-planifiee {
+  border-left-color: #3498db;
+}
+
+.livraison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.livraison-id {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.livraison-statut {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+}
+
+.livraison-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  color: #555;
+}
+
+.no-data {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* === Bouton principal === */
+.btn-primary {
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: #16a085;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3);
+}
+
+/* === Résultats de l'itinéraire === */
+.result-section {
+  margin-bottom: 20px;
+}
+
+.itineraire-ordre {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2c3e50;
+  border: 1px solid #ddd;
+  line-height: 1.8;
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.stat-label {
+  display: block;
+  font-size: 13px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.etapes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.etapes-list li {
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.etape-depart,
+.etape-retour {
+  background-color: #d5f5e3;
+  border-left: 4px solid #27ae60;
+}
+
+.etape-livraison {
+  background-color: #fdebd0;
+  border-left: 4px solid #f39c12;
+}
+
+.error {
+  color: #e74c3c;
+  background-color: #fadbd8;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}

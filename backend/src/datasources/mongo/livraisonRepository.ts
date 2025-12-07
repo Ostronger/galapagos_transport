@@ -23,11 +23,15 @@ export class LivraisonRepository {
   }
 
   async findAll(): Promise<Livraison[]> {
-    return (await this.livraisonsCollection.find().toArray()) as unknown as Livraison[];
+    return (await this.livraisonsCollection
+      .find()
+      .toArray()) as unknown as Livraison[];
   }
 
   async findById(id: string): Promise<Livraison | null> {
-    return (await this.livraisonsCollection.findOne({ id })) as unknown as Livraison | null;
+    return (await this.livraisonsCollection.findOne({
+      id,
+    })) as unknown as Livraison | null;
   }
 
   async findByClientId(clientId: string): Promise<Livraison[]> {

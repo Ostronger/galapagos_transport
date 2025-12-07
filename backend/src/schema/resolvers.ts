@@ -2,10 +2,7 @@ import type { ClientRepository } from "../datasources/mongo/clientRepository.js"
 import type { PortRepository } from "../datasources/mongo/portRepository.js";
 import type { PortNeo4jRepository } from "../datasources/neo4j/portRepository.js";
 import type { TrajetRepository } from "../datasources/neo4j/trajetRepository.js";
-import type {
-  Hydravion,
-  HydravionRepository,
-} from "../datasources/mongo/hydravionRepository.js";
+import type { HydravionRepository } from "../datasources/mongo/hydravionRepository.js";
 import type { HydravionNeo4jRepository } from "../datasources/neo4j/hydravionRepository.js";
 import type { LockerRepository } from "../datasources/mongo/lockerRepository.js";
 import type { CommandeRepository } from "../datasources/mongo/commandeRepository.js";
@@ -29,13 +26,17 @@ export const resolvers = {
   Query: {
     _health: () => "OK",
 
-    // ========== HYDRAVIONS ==========
-    hydravions: async (_: any, __: any, { hydravionRepository }: Context) => {
+    // ========== HYDRAVIONS ========== \\
+    hydravions: async (
+      parent: any,
+      args: any,
+      { hydravionRepository }: Context
+    ) => {
       return await hydravionRepository.findAll();
     },
 
     hydravion: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { hydravionRepository }: Context
     ) => {
@@ -43,8 +44,8 @@ export const resolvers = {
     },
 
     hydravionsDisponibles: async (
-      _: any,
-      __: any,
+      parent: any,
+      args: any,
       { hydravionRepository }: Context
     ) => {
       const hydravions = await hydravionRepository.findAll();
@@ -53,47 +54,47 @@ export const resolvers = {
       );
     },
 
-    // ========== PORTS & ÎLES ==========
-    ports: async (_: any, __: any, { portRepository }: Context) => {
+    // ========== PORTS & ÎLES ========== \\
+    ports: async (parent: any, args: any, { portRepository }: Context) => {
       return await portRepository.findAll();
     },
 
     port: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { portRepository }: Context
     ) => {
       return await portRepository.findById(id);
     },
 
-    iles: async (_: any, __: any, { portNeo4jRepository }: Context) => {
+    iles: async (parent: any, args: any, { portNeo4jRepository }: Context) => {
       return await portNeo4jRepository.findAllIles();
     },
 
-    // ========== PRODUITS & STOCK ==========
-    produits: async (_: any, __: any, { produitRepository }: Context) => {
+    // ========== PRODUITS & STOCK ========== \\
+    produits: async (
+      parent: any,
+      args: any,
+      { produitRepository }: Context
+    ) => {
       return await produitRepository.findAll();
     },
 
     produit: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { produitRepository }: Context
     ) => {
       return await produitRepository.findById(id);
     },
 
-    stocksProduits: async (_: any, __: any, { produitRepository }: Context) => {
-      return await produitRepository.findAll();
-    },
-
-    // ========== CLIENTS & COMMANDES ==========
-    clients: async (_: any, __: any, { clientRepository }: Context) => {
+    // ========== CLIENTS & COMMANDES ========== \\
+    clients: async (parent: any, args: any, { clientRepository }: Context) => {
       return await clientRepository.findAll();
     },
 
     client: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { clientRepository }: Context
     ) => {
@@ -101,7 +102,7 @@ export const resolvers = {
     },
 
     commande: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { commandeRepository }: Context
     ) => {
@@ -109,20 +110,24 @@ export const resolvers = {
     },
 
     commandesEnCours: async (
-      _: any,
-      __: any,
+      parent: any,
+      args: any,
       { commandeRepository }: Context
     ) => {
       return await commandeRepository.findEnCours();
     },
 
     // ========== LIVRAISONS ==========
-    livraisons: async (_: any, __: any, { livraisonRepository }: Context) => {
+    livraisons: async (
+      parent: any,
+      args: any,
+      { livraisonRepository }: Context
+    ) => {
       return await livraisonRepository.findAll();
     },
 
     livraisonsClient: async (
-      _: any,
+      parent: any,
       { clientId }: { clientId: string },
       { livraisonRepository }: Context
     ) => {
@@ -130,7 +135,7 @@ export const resolvers = {
     },
 
     historiqueLivraisonsClient: async (
-      _: any,
+      parent: any,
       { clientId }: { clientId: string },
       { livraisonRepository }: Context
     ) => {
@@ -139,7 +144,7 @@ export const resolvers = {
     },
 
     toutesLivraisonsClient: async (
-      _: any,
+      parent: any,
       { clientId }: { clientId: string },
       { livraisonRepository }: Context
     ) => {
@@ -148,20 +153,24 @@ export const resolvers = {
 
     // ========== LOCKERS ==========
     lockersParPort: async (
-      _: any,
+      parent: any,
       { portId, filtreVide }: { portId: string; filtreVide?: boolean },
       { lockerRepository }: Context
     ) => {
       return await lockerRepository.findByPortId(portId, filtreVide);
     },
 
-    lockersVides: async (_: any, __: any, { lockerRepository }: Context) => {
+    lockersVides: async (
+      parent: any,
+      args: any,
+      { lockerRepository }: Context
+    ) => {
       const lockers = await lockerRepository.findAll();
       return lockers.filter((l) => !l.plein);
     },
 
     lockersParIle: async (
-      _: any,
+      parent: any,
       { ileId }: { ileId: string },
       { portRepository, lockerRepository }: Context
     ) => {
@@ -178,30 +187,119 @@ export const resolvers = {
     },
 
     // ========== TRAJETS & OPTIMISATION ==========
-    trajets: async (_: any, __: any, { trajetRepository }: Context) => {
+    trajets: async (parent: any, args: any, { trajetRepository }: Context) => {
       return await trajetRepository.findAll();
     },
 
     calculerItineraireOptimal: async (
-      _: any,
+      parent: any,
       {
         hydravionId,
         portsCibles,
       }: { hydravionId: string; portsCibles: string[] },
-      { hydravionRepository, trajetRepository }: Context
+      { trajetRepository, hydravionRepository, portRepository }: Context
     ) => {
+      // 1. Vérifier que l'hydravion existe
       const hydravion = await hydravionRepository.findById(hydravionId);
       if (!hydravion) throw new Error("Hydravion non trouvé");
 
-      return await trajetRepository.calculerItineraireOptimal(
-        hydravion.positionPort?.id || hydravion.positionGPS,
-        portsCibles,
-        hydravion.consommationKm
+      // 2. Calculer l'itinéraire optimal
+      const resultat = await trajetRepository.calculerItineraireOptimal(
+        portsCibles
       );
+
+      // 3. Récupérer les informations complètes des ports
+      const portsComplets = await Promise.all(
+        resultat.portsOrdonnes.map(async (p) => {
+          const port = await portRepository.findById(p.id);
+          return port || p;
+        })
+      );
+
+      // 4. Calculer la consommation de carburant
+      const carburantNecessaire =
+        resultat.distanceTotale * hydravion.consommationKm;
+
+      return {
+        portsOrdonnes: portsComplets,
+        distanceTotale: resultat.distanceTotale,
+        carburantNecessaire,
+      };
+    },
+
+    calculerItineraireOptimalParLivraisons: async (
+      parent: any,
+      {
+        hydravionId,
+        livraisonIds,
+      }: { hydravionId: string; livraisonIds: string[] },
+      {
+        trajetRepository,
+        hydravionRepository,
+        portRepository,
+        livraisonRepository,
+      }: Context
+    ) => {
+      // 1. Vérifier que l'hydravion existe
+      const hydravion = await hydravionRepository.findById(hydravionId);
+      if (!hydravion) throw new Error("Hydravion non trouvé");
+
+      // 2. Récupérer les livraisons
+      const livraisons = await Promise.all(
+        livraisonIds.map((id) => livraisonRepository.findById(id))
+      );
+
+      const livraisonsValides = livraisons.filter((l) => l !== null);
+      if (livraisonsValides.length === 0) {
+        throw new Error("Aucune livraison valide trouvée");
+      }
+
+      // 3. Extraire les ports de destination uniques
+      const portsCibles = Array.from(
+        new Set(livraisonsValides.map((l) => l!.portArriveeId))
+      );
+
+      // 4. Vérifier la capacité
+      let totalCaisses = 0;
+      for (const livraison of livraisonsValides) {
+        totalCaisses += livraison!.caisses.length;
+      }
+
+      if (totalCaisses > hydravion.capaciteMax) {
+        throw new Error(
+          `Capacité insuffisante: ${totalCaisses} caisses pour ${hydravion.capaciteMax} places disponibles`
+        );
+      }
+
+      // 5. Calculer l'itinéraire optimal
+      const resultat = await trajetRepository.calculerItineraireOptimal(
+        portsCibles
+      );
+
+      // 6. Récupérer les informations complètes des ports
+      const portsComplets = await Promise.all(
+        resultat.portsOrdonnes.map(async (p) => {
+          const port = await portRepository.findById(p.id);
+          return port || p;
+        })
+      );
+
+      // 7. Calculer la consommation de carburant
+      const carburantNecessaire =
+        resultat.distanceTotale * hydravion.consommationKm;
+
+      return {
+        portsOrdonnes: portsComplets,
+        distanceTotale: resultat.distanceTotale,
+        carburantNecessaire,
+        livraisons: livraisonsValides,
+        capaciteUtilisee: totalCaisses,
+        capaciteMax: hydravion.capaciteMax,
+      };
     },
 
     calculerConsommationCarburant: async (
-      _: any,
+      parent: any,
       { hydravionId, distance }: { hydravionId: string; distance: number },
       { hydravionRepository }: Context
     ) => {
@@ -215,7 +313,7 @@ export const resolvers = {
   Mutation: {
     // ========== COMMANDES ==========
     creerCommande: async (
-      _: any,
+      parent: any,
       { input }: { input: { clientId: string; caisseIds: string[] } },
       { commandeRepository }: Context
     ) => {
@@ -223,7 +321,7 @@ export const resolvers = {
     },
 
     annulerCommande: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { commandeRepository }: Context
     ) => {
@@ -232,7 +330,7 @@ export const resolvers = {
 
     // ========== LIVRAISONS ==========
     creerLivraison: async (
-      _: any,
+      parent: any,
       { input }: { input: any },
       { livraisonRepository }: Context
     ) => {
@@ -240,7 +338,7 @@ export const resolvers = {
     },
 
     demarrerLivraison: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { livraisonRepository }: Context
     ) => {
@@ -248,7 +346,7 @@ export const resolvers = {
     },
 
     terminerLivraison: async (
-      _: any,
+      parent: any,
       { id }: { id: string },
       { livraisonRepository }: Context
     ) => {
@@ -257,7 +355,7 @@ export const resolvers = {
 
     // ========== HYDRAVIONS ==========
     deplacerHydravion: async (
-      _: any,
+      parent: any,
       { id, portId }: { id: string; portId: string },
       { hydravionRepository }: Context
     ) => {
@@ -272,7 +370,7 @@ export const resolvers = {
     },
 
     ravitaillerHydravion: async (
-      _: any,
+      parent: any,
       { id, quantite }: { id: string; quantite: number },
       { hydravionRepository }: Context
     ) => {
@@ -289,7 +387,7 @@ export const resolvers = {
 
     // ========== LOCKERS ==========
     assignerCaisseAuLocker: async (
-      _: any,
+      parent: any,
       { lockerId, caisseId }: { lockerId: string; caisseId: string },
       { lockerRepository }: Context
     ) => {
@@ -298,7 +396,7 @@ export const resolvers = {
     },
 
     libererLocker: async (
-      _: any,
+      parent: any,
       { lockerId }: { lockerId: string },
       { lockerRepository }: Context
     ) => {
@@ -310,7 +408,11 @@ export const resolvers = {
   // Resolvers pour les types imbriqués
 
   Hydravion: {
-    positionPort: async (parent: any, _: any, { portRepository }: Context) => {
+    positionPort: async (
+      parent: any,
+      args: any,
+      { portRepository }: Context
+    ) => {
       if (parent.positionPort && typeof parent.positionPort === "object") {
         return parent.positionPort;
       }
@@ -324,7 +426,7 @@ export const resolvers = {
   Port: {
     nbLockersVides: async (
       parent: any,
-      _: any,
+      args: any,
       { lockerRepository }: Context
     ) => {
       const lockers = await lockerRepository.findByPortId(parent.id, true);
@@ -334,14 +436,14 @@ export const resolvers = {
   },
 
   Locker: {
-    contenu: async (parent: any, _: any, { lockerRepository }: Context) => {
+    contenu: async (parent: any, args: any, { lockerRepository }: Context) => {
       if (parent.estVide) return null;
       return await lockerRepository.findCaisseById(parent.caisseId);
     },
   },
 
   Caisse: {
-    client: async (parent: any, _: any, { clientRepository }: Context) => {
+    client: async (parent: any, args: any, { clientRepository }: Context) => {
       return await clientRepository.findById(parent.clientId);
     },
   },
@@ -349,7 +451,7 @@ export const resolvers = {
   Client: {
     historiqueCommandes: async (
       parent: any,
-      _: any,
+      args: any,
       { commandeRepository }: Context
     ) => {
       const commandes = await commandeRepository.findByClientId(parent.id);
@@ -358,36 +460,66 @@ export const resolvers = {
   },
 
   Commande: {
-    client: async (parent: any, _: any, { clientRepository }: Context) => {
+    client: async (parent: any, args: any, { clientRepository }: Context) => {
       return await clientRepository.findById(parent.clientId);
     },
-    caisses: async (parent: any, _: any, { commandeRepository }: Context) => {
+    caisses: async (
+      parent: any,
+      args: any,
+      { commandeRepository }: Context
+    ) => {
       return await commandeRepository.getCaisses(parent.id);
     },
   },
 
   Livraison: {
-    commande: async (parent: any, _: any, { commandeRepository }: Context) => {
+    commande: async (
+      parent: any,
+      args: any,
+      { commandeRepository }: Context
+    ) => {
       return await commandeRepository.findById(parent.commandeId);
     },
     hydravion: async (
       parent: any,
-      _: any,
+      args: any,
       { hydravionRepository }: Context
     ) => {
       return await hydravionRepository.findById(parent.hydravionId);
     },
-    portDepart: async (parent: any, _: any, { portRepository }: Context) => {
+    portDepart: async (parent: any, args: any, { portRepository }: Context) => {
       return await portRepository.findById(parent.portDepartId);
     },
-    portArrivee: async (parent: any, _: any, { portRepository }: Context) => {
+    portArrivee: async (
+      parent: any,
+      args: any,
+      { portRepository }: Context
+    ) => {
       return await portRepository.findById(parent.portArriveeId);
     },
-    caisses: async (parent: any, _: any, { commandeRepository }: Context) => {
+    caisses: async (
+      parent: any,
+      args: any,
+      { commandeRepository }: Context
+    ) => {
       if (!parent.caisses || parent.caisses.length === 0) {
         return [];
       }
       return await commandeRepository.getCaisses(parent.commandeId);
+    },
+  },
+
+  // Transformer les objets Port en IDs pour le type Trajet
+  Trajet: {
+    portDepart: (parent: any) => {
+      return typeof parent.portDepart === "string"
+        ? parent.portDepart
+        : parent.portDepart?.id || "";
+    },
+    portArrivee: (parent: any) => {
+      return typeof parent.portArrivee === "string"
+        ? parent.portArrivee
+        : parent.portArrivee?.id || "";
     },
   },
 };

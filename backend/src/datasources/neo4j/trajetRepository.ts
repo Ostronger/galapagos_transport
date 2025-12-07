@@ -3,7 +3,6 @@ import type { Driver, Session } from "neo4j-driver";
 export type TrajetNeo4j = {
   id: string;
   distanceKm: number | null;
-  dureeMinutes: number | null;
   portDepart: {
     id: string;
     nom: string;
@@ -61,17 +60,12 @@ export class TrajetRepository {
         const i2 = record.get("i2");
 
         const rawDistance = t.properties.distance;
-        const distance =
-            rawDistance !== null && rawDistance !== undefined
-                ? Number(rawDistance)
-                : null;
+        const distance = rawDistance !== null ? Number(rawDistance) : null;
 
         return {
           // On génère un id logique à partir des ports
           id: `${p1.properties.id as string}_${p2.properties.id as string}`,
           distanceKm: distance,
-          // pas encore de durée dans le graphe
-          dureeMinutes: null,
           portDepart: {
             id: p1.properties.id as string,
             nom: p1.properties.nom as string,
@@ -104,188 +98,145 @@ export class TrajetRepository {
   }
 
   /**
-   * Trajets entre deux ports précis (par id).
+   * Calcule l'itinéraire optimal pour visiter une liste de ports
+   * en partant de l'entrepôt (PORT-000) et en y retournant.
+   * Utilise un algorithme glouton du plus proche voisin.
    */
-  async findByPorts(
-    portDepartId: string,
-    portArriveeId: string
-  ): Promise<TrajetNeo4j[]> {
+  async calculerItineraireOptimal(portsCibles: string[]): Promise<{
+    portsOrdonnes: Array<{
+      id: string;
+      nom: string;
+      coordonnees: { latitude: number; longitude: number };
+    }>;
+    distanceTotale: number;
+    trajets: Array<{ depart: string; arrivee: string; distance: number }>;
+  }> {
     const session = this.driver.session();
     try {
-      const result = await session.run(
+      // Récupérer tous les ports concernés (entrepôt + cibles)
+      const portIds = ["PORT-000", ...portsCibles];
+
+      const portsResult = await session.run(
         `
-        MATCH (p1:Port {id: $portDepartId})-[t:RELIE_A]->(p2:Port {id: $portArriveeId})
-        MATCH (p1)-[:SE_TROUVE_SUR]->(i1:Ile)
-        MATCH (p2)-[:SE_TROUVE_SUR]->(i2:Ile)
-        RETURN t, p1, p2, i1, i2
+        MATCH (p:Port)
+        WHERE p.id IN $portIds
+        RETURN p
         `,
-        { portDepartId, portArriveeId }
+        { portIds }
       );
 
-      return result.records.map((record) => {
-        const t = record.get("t");
-        const p1 = record.get("p1");
-        const p2 = record.get("p2");
-        const i1 = record.get("i1");
-        const i2 = record.get("i2");
-
-        const rawDistance = t.properties.distance;
-            const distance =
-            rawDistance !== null && rawDistance !== undefined
-                ? Number(rawDistance)
-                : null;
-
+      const ports = portsResult.records.map((record) => {
+        const p = record.get("p");
         return {
-          id: `${p1.properties.id as string}_${p2.properties.id as string}`,
-          distanceKm: distance,
-          dureeMinutes: null,
-          portDepart: {
-            id: p1.properties.id as string,
-            nom: p1.properties.nom as string,
-            coordonnees: {
-              latitude: (p1.properties.latitude as number) ?? null,
-              longitude: (p1.properties.longitude as number) ?? null,
-            },
-            ile: {
-              id: i1.properties.id as string,
-              nom: i1.properties.nom as string,
-            },
-          },
-          portArrivee: {
-            id: p2.properties.id as string,
-            nom: p2.properties.nom as string,
-            coordonnees: {
-              latitude: (p2.properties.latitude as number) ?? null,
-              longitude: (p2.properties.longitude as number) ?? null,
-            },
-            ile: {
-              id: i2.properties.id as string,
-              nom: i2.properties.nom as string,
-            },
+          id: p.properties.id as string,
+          nom: p.properties.nom as string,
+          coordonnees: {
+            latitude: (p.properties.latitude as number) ?? 0,
+            longitude: (p.properties.longitude as number) ?? 0,
           },
         };
       });
-    } finally {
-      await session.close();
-    }
-  }
 
-  async calculerItineraireOptimal(
-    positionDepart: string | { latitude: number; longitude: number },
-    portsCibles: string[],
-    consommationKm: number
-  ) {
-    const session = this.driver.session();
-    try {
-      // Utiliser l'algorithme du voyageur de commerce (TSP) simplifié
-      // On commence par l'entrepôt (ou position actuelle), on visite tous les ports et on revient
+      console.log(
+        `Ports trouvés pour l'itinéraire:`,
+        ports.map((p) => p.id)
+      );
+      console.log(`Ports demandés:`, portIds);
 
-      // 1. Trouver le port de départ (si c'est un ID) ou le plus proche (si GPS)
-      let portDepartId: string;
-      if (typeof positionDepart === 'string') {
-        portDepartId = positionDepart;
-      } else {
-        // Trouver le port le plus proche de la position GPS
-        const nearestPort = await session.run(`
-          MATCH (p:Port)
-          WITH p, point.distance(
-            point({latitude: $lat, longitude: $lon}),
-            point({latitude: p.latitude, longitude: p.longitude})
-          ) AS distance
-          ORDER BY distance ASC
-          LIMIT 1
-          RETURN p.id as id
-        `, { lat: positionDepart.latitude, lon: positionDepart.longitude });
+      // Récupérer toutes les distances entre les ports
+      const distancesResult = await session.run(
+        `
+        MATCH (p1:Port)-[t:RELIE_A]->(p2:Port)
+        WHERE p1.id IN $portIds AND p2.id IN $portIds
+        RETURN p1.id as depart, p2.id as arrivee, t.distance as distance
+        `,
+        { portIds }
+      );
 
-        portDepartId = nearestPort.records[0].get("id");
-      }
+      // Créer une matrice de distances
+      const distanceMap = new Map<string, number>();
+      distancesResult.records.forEach((record) => {
+        const depart = record.get("depart") as string;
+        const arrivee = record.get("arrivee") as string;
+        const distance = Number(record.get("distance")) || 0;
+        distanceMap.set(`${depart}-${arrivee}`, distance);
+      });
 
-      // 2. Calculer l'itinéraire optimal avec l'algorithme du plus proche voisin
-      const result = await session.run(`
-        MATCH (start:Port {id: $portDepartId})
-        MATCH (targets:Port) WHERE targets.id IN $portsCibles
+      console.log(`Distances trouvées: ${distanceMap.size} trajets`);
+      console.log(
+        `Exemple de distances:`,
+        Array.from(distanceMap.entries()).slice(0, 5)
+      );
 
-        // Calculer tous les chemins possibles
-        WITH start, collect(targets) as allTargets
+      // Si aucune distance n'est trouvée dans Neo4j, calculer avec Haversine
 
-        // Algorithme glouton : toujours choisir le port le plus proche non visité
-        CALL {
-          WITH start, allTargets
-          WITH start, allTargets, start as current, [] as visited, 0.0 as totalDistance
+      // Algorithme du plus proche voisin (Nearest Neighbor)
+      const visited = new Set<string>();
+      const itineraire: string[] = [];
+      const trajets: Array<{
+        depart: string;
+        arrivee: string;
+        distance: number;
+      }> = [];
 
-          // Boucle pour visiter tous les ports
-          UNWIND range(0, size(allTargets)-1) as step
-          WITH current, allTargets, visited, totalDistance
-          WHERE size(visited) < size(allTargets)
+      let current = "PORT-000"; // Commencer à l'entrepôt
+      itineraire.push(current);
+      visited.add(current);
 
-          // Trouver le port non visité le plus proche
-          WITH current, allTargets, visited, totalDistance,
-               [target IN allTargets WHERE NOT target IN visited |
-                 {port: target,
-                  distance: point.distance(
-                    point({latitude: current.latitude, longitude: current.longitude}),
-                    point({latitude: target.latitude, longitude: target.longitude})
-                  ) / 1000.0}
-               ] as candidates
+      let distanceTotale = 0;
 
-          WITH current, allTargets, visited, totalDistance,
-               candidates[0] as nearest
+      // Visiter tous les ports cibles
+      while (visited.size < portIds.length) {
+        let meilleurProchain: string | null = null;
+        let meilleureDistance = Infinity;
 
-          RETURN visited + nearest.port as visited,
-                 totalDistance + nearest.distance as totalDistance
+        // Trouver le port non visité le plus proche
+        for (const port of portIds) {
+          if (!visited.has(port)) {
+            const distance = distanceMap.get(`${current}-${port}`) ?? Infinity;
+            if (distance < meilleureDistance) {
+              meilleureDistance = distance;
+              meilleurProchain = port;
+            }
+          }
         }
 
-        RETURN visited, totalDistance
-      `, { portDepartId, portsCibles });
-
-      if (result.records.length === 0) {
-        throw new Error("Impossible de calculer l'itinéraire");
+        if (meilleurProchain) {
+          trajets.push({
+            depart: current,
+            arrivee: meilleurProchain,
+            distance: meilleureDistance,
+          });
+          distanceTotale += meilleureDistance;
+          current = meilleurProchain;
+          itineraire.push(current);
+          visited.add(current);
+        } else {
+          break;
+        }
       }
 
-      const record = result.records[0];
-      const portsOrdonnes = record.get("visited").map((port: any) => ({
-        id: port.properties.id,
-        nom: port.properties.nom,
-        coordonnees: {
-          latitude: port.properties.latitude,
-          longitude: port.properties.longitude
-        }
-      }));
+      // Retourner à l'entrepôt
+      const distanceRetour = distanceMap.get(`${current}-PORT-000`) ?? Infinity;
 
-      const distanceTotale = record.get("totalDistance");
-      const carburantNecessaire = distanceTotale * consommationKm;
+      trajets.push({
+        depart: current,
+        arrivee: "PORT-000",
+        distance: distanceRetour,
+      });
+      distanceTotale += distanceRetour;
+      itineraire.push("PORT-000");
+
+      // Récupérer les informations complètes des ports dans l'ordre
+      const portsOrdonnes = itineraire.map((portId) => {
+        const port = ports.find((p) => p.id === portId);
+        return port!;
+      });
 
       return {
         portsOrdonnes,
         distanceTotale,
-        carburantNecessaire
-      };
-
-    } catch (error) {
-      // Fallback : retourner simplement les ports dans l'ordre donné
-      console.error("Erreur lors du calcul d'itinéraire:", error);
-
-      const fallbackResult = await session.run(`
-        MATCH (p:Port) WHERE p.id IN $portsCibles
-        RETURN p
-      `, { portsCibles });
-
-      const ports = fallbackResult.records.map(r => {
-        const port = r.get("p").properties;
-        return {
-          id: port.id,
-          nom: port.nom,
-          coordonnees: {
-            latitude: port.latitude,
-            longitude: port.longitude
-          }
-        };
-      });
-
-      return {
-        portsOrdonnes: ports,
-        distanceTotale: 0,
-        carburantNecessaire: 0
+        trajets,
       };
     } finally {
       await session.close();

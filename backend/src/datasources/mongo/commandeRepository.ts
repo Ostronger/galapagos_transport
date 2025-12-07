@@ -18,15 +18,21 @@ export class CommandeRepository {
   }
 
   async findAll(): Promise<Commande[]> {
-    return (await this.commandesCollection.find().toArray()) as unknown as Commande[];
+    return (await this.commandesCollection
+      .find()
+      .toArray()) as unknown as Commande[];
   }
 
   async findById(id: string): Promise<Commande | null> {
-    return (await this.commandesCollection.findOne({ id })) as unknown as Commande | null;
+    return (await this.commandesCollection.findOne({
+      id,
+    })) as unknown as Commande | null;
   }
 
   async findByClientId(clientId: string): Promise<Commande[]> {
-    return (await this.commandesCollection.find({ clientId }).toArray()) as unknown as Commande[];
+    return (await this.commandesCollection
+      .find({ clientId })
+      .toArray()) as unknown as Commande[];
   }
 
   async findEnCours(): Promise<Commande[]> {

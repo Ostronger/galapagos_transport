@@ -1,7 +1,6 @@
 import { gql } from "graphql-tag"; // Importer la fonction gql pour définir le schéma GraphQL
 
 export const typeDefs = gql`
-
   scalar Date
 
   type Hydravion {
@@ -124,7 +123,17 @@ export const typeDefs = gql`
   type Itineraire {
     portsOrdonnes: [Port!]! # L'ordre de passage calculé
     distanceTotale: Float!
-    carburantNecessaire: Float! #
+    carburantNecessaire: Float!
+  }
+
+  # Pour l'optimisation avec livraisons
+  type ItineraireAvecLivraisons {
+    portsOrdonnes: [Port!]!
+    distanceTotale: Float!
+    carburantNecessaire: Float!
+    livraisons: [Livraison!]! # Les livraisons dans l'ordre
+    capaciteUtilisee: Int! # Nombre de caisses transportées
+    capaciteMax: Int! # Capacité max de l'hydravion
   }
 
   type Query {
@@ -164,15 +173,17 @@ export const typeDefs = gql`
 
     # Trajets & Optimisation
     trajets: [Trajet!]!
-    calculerItineraireOptimal(
-      hydravionId: ID!
-      portsCibles: [ID!]!
-    ): Itineraire
 
-    calculerConsommationCarburant(
+    # Calcule l'itinéraire optimal pour livrer une liste de ports
+    calculerItineraireOptimal(hydravionId: ID!, portsCibles: [ID!]!): Itineraire
+
+    # Calcule l'itinéraire optimal pour une liste de livraisons
+    calculerItineraireOptimalParLivraisons(
       hydravionId: ID!
-      distance: Float!
-    ): Float!
+      livraisonIds: [ID!]!
+    ): ItineraireAvecLivraisons
+
+    calculerConsommationCarburant(hydravionId: ID!, distance: Float!): Float!
   }
 
   type Mutation {

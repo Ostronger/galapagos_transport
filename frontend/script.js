@@ -39,6 +39,7 @@ function initMap() {
 document.addEventListener("DOMContentLoaded", () => {
   initMap();
   loadClientsSelect();
+  loadHydravionsSelectOptimisation();
 });
 
 // === Health check ===
@@ -362,106 +363,6 @@ document
     }
   });
 
-// Charger la liste des hydravions pour le select
-async function loadHydravionsSelect() {
-  const result = await runQuery(`
-    query {
-      hydravions {
-        id
-        modele
-        etat
-      }
-    }
-  `);
-
-  const select = document.getElementById("hydravionSelect");
-  result.data.hydravions.forEach((hydravion) => {
-    const option = document.createElement("option");
-    option.value = hydravion.id;
-    option.textContent = `${hydravion.id} — ${hydravion.modele} (${hydravion.etat})`;
-    select.appendChild(option);
-  });
-}
-
-// === Optimisation d'itinéraire ===
-document
-  .getElementById("optimiserItineraire")
-  .addEventListener("click", async () => {
-    const portsInput = document.getElementById("portsInput").value.trim();
-    const hydravionId = document.getElementById("hydravionSelect").value;
-
-    if (!portsInput || !hydravionId) {
-      alert("Veuillez remplir tous les champs");
-      return;
-    }
-
-    const portsCibles = portsInput.split(",").map((p) => p.trim());
-
-    const result = await runQuery(
-      `
-    query($portsCibles: [ID!]!, $hydravionId: ID!) {
-      calculerItineraireOptimal(portsCibles: $portsCibles, hydravionId: $hydravionId) {
-        portsOrdonnes {
-          nom
-          coordonnees {
-            latitude
-            longitude
-          }
-        }
-        distanceTotale
-        carburantNecessaire
-      }
-    }
-  `,
-      { portsCibles, hydravionId }
-    );
-
-    const div = document.getElementById("itineraireResult");
-
-    if (result.errors) {
-      div.innerHTML = `<p style="color: red;">❌ Erreur: ${result.errors[0].message}</p>`;
-      return;
-    }
-
-    const itineraire = result.data.calculerItineraireOptimal;
-
-    const ordre = itineraire.portsOrdonnes.map((p) => p.nom).join(" → ");
-
-    div.innerHTML = `
-    <h3>✅ Itinéraire Optimal Calculé</h3>
-    <p><strong>Ordre de visite:</strong> ${ordre}</p>
-    <p><strong>Distance totale:</strong> ${itineraire.distanceTotale.toFixed(
-      2
-    )} km</p>
-    <p><strong>Consommation carburant:</strong> ${itineraire.carburantNecessaire.toFixed(
-      2
-    )} litres</p>
-  `;
-
-    // Afficher l'itinéraire sur la carte
-    portsLayer.clearLayers();
-
-    const coordinates = itineraire.portsOrdonnes.map((p) => [
-      p.coordonnees.latitude,
-      p.coordonnees.longitude,
-    ]);
-
-    // Dessiner les marqueurs
-    itineraire.portsOrdonnes.forEach((port, index) => {
-      const marker = L.marker([
-        port.coordonnees.latitude,
-        port.coordonnees.longitude,
-      ]).bindPopup(`<strong>${index + 1}. ${port.nom}</strong>`);
-      portsLayer.addLayer(marker);
-    });
-
-    // Dessiner la ligne de l'itinéraire
-    const polyline = L.polyline(coordinates, { color: "red", weight: 3 }).addTo(
-      map
-    );
-    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
-  });
-
 // === Hydravions ===
 document
   .getElementById("loadHydravions")
@@ -495,3 +396,391 @@ document
       list.appendChild(li);
     });
   });
+
+// === Optimisation: Charger les hydravions dans le select ===
+async function loadHydravionsSelectOptimisation() {
+  const result = await runQuery(`
+    query {
+      hydravions {
+        id
+        modele
+        etat
+        capaciteMax
+        niveauCarburant
+        niveauCarburantMax
+        consommationKm
+      }
+    }
+  `);
+
+  const select = document.getElementById("hydravionSelect");
+
+  result.data.hydravions.forEach((hydravion) => {
+    const option = document.createElement("option");
+    option.value = hydravion.id;
+    option.textContent = `${hydravion.id} — ${hydravion.modele} (${hydravion.etat}) - Capacité: ${hydravion.capaciteMax} caisses`;
+    option.dataset.consommation = hydravion.consommationKm;
+    select.appendChild(option);
+  });
+
+  // Écouter le changement de sélection
+  select.addEventListener("change", onHydravionSelected);
+}
+
+// Données globales pour les livraisons et ports
+let livraisonsData = [];
+let portsData = [];
+let trajetsData = []; // Distances entre ports depuis Neo4j
+
+// Charger les données des livraisons, ports et trajets depuis GraphQL
+async function loadLivraisonsAndPorts() {
+  const result = await runQuery(`
+    query {
+      livraisons {
+        id
+        statut
+        hydravion {
+          id
+        }
+        portDepart {
+          id
+          nom
+          coordonnees {
+            latitude
+            longitude
+          }
+        }
+        portArrivee {
+          id
+          nom
+          coordonnees {
+            latitude
+            longitude
+          }
+        }
+        commande {
+          client {
+            nom
+          }
+          caisses {
+            id
+          }
+        }
+      }
+      ports {
+        id
+        nom
+        coordonnees {
+          latitude
+          longitude
+        }
+      }
+      trajets {
+        portDepart
+        portArrivee
+        distanceKm
+      }
+    }
+  `);
+
+  livraisonsData = result.data.livraisons;
+  portsData = result.data.ports;
+  trajetsData = result.data.trajets || [];
+
+  console.log("Trajets chargés:", trajetsData);
+  console.log("Ports chargés:", portsData.map(p => p.id));
+}
+
+// Quand un hydravion est sélectionné
+async function onHydravionSelected() {
+  const hydravionId = document.getElementById("hydravionSelect").value;
+  const container = document.getElementById("livraisonsHydravionContainer");
+  const listDiv = document.getElementById("livraisonsHydravionList");
+  const resultDiv = document.getElementById("itineraireResult");
+
+  resultDiv.innerHTML = "";
+
+  if (!hydravionId) {
+    container.style.display = "none";
+    return;
+  }
+
+  // Charger les livraisons si pas encore fait
+  if (livraisonsData.length === 0) {
+    await loadLivraisonsAndPorts();
+  }
+
+  // Filtrer les livraisons pour cet hydravion
+  const livraisonsHydravion = livraisonsData.filter(
+    (l) => l.hydravion && l.hydravion.id === hydravionId
+  );
+
+  listDiv.innerHTML = "";
+
+  if (livraisonsHydravion.length === 0) {
+    listDiv.innerHTML = "<p class='no-data'>Aucune livraison pour cet hydravion</p>";
+    container.style.display = "block";
+    return;
+  }
+
+  // Afficher les livraisons
+  livraisonsHydravion.forEach((livraison) => {
+    const div = document.createElement("div");
+    div.className = `livraison-item livraison-${livraison.statut.toLowerCase()}`;
+
+    const nbCaisses = livraison.commande?.caisses?.length || 0;
+    const clientNom = livraison.commande?.client?.nom || "—";
+    const statutIcon = getStatutIcon(livraison.statut);
+
+    div.innerHTML = `
+      <div class="livraison-header">
+        <span class="livraison-id">${livraison.id}</span>
+        <span class="livraison-statut">${statutIcon} ${livraison.statut}</span>
+      </div>
+      <div class="livraison-details">
+        <span>👤 ${clientNom}</span>
+        <span>📍 ${livraison.portDepart.nom} → ${livraison.portArrivee.nom}</span>
+        <span>📦 ${nbCaisses} caisse(s)</span>
+      </div>
+    `;
+
+    listDiv.appendChild(div);
+  });
+
+  container.style.display = "block";
+}
+
+// Obtenir l'icône selon le statut
+function getStatutIcon(statut) {
+  switch (statut) {
+    case "LIVREE": return "✅";
+    case "EN_COURS": return "🚚";
+    case "PLANIFIEE": return "📋";
+    default: return "❓";
+  }
+}
+
+// Obtenir la distance entre deux ports depuis les données Neo4j (trajetsData)
+function getDistanceEntrePortsNeo4j(portId1, portId2) {
+  // Si les IDs sont identiques, distance = 0
+  if (portId1 === portId2) return 0;
+
+  // Chercher la relation dans les deux sens
+  // Gérer le cas où portDepart/portArrivee sont des strings ou des objets
+  const trajet = trajetsData.find((t) => {
+    const depart = typeof t.portDepart === 'string' ? t.portDepart : t.portDepart?.id;
+    const arrivee = typeof t.portArrivee === 'string' ? t.portArrivee : t.portArrivee?.id;
+    return (depart === portId1 && arrivee === portId2) ||
+      (depart === portId2 && arrivee === portId1);
+  });
+
+  if (trajet) {
+    console.log(`Distance ${portId1} -> ${portId2}: ${trajet.distanceKm}`);
+    return trajet.distanceKm;
+  }
+
+  console.warn(`Pas de trajet trouvé entre ${portId1} et ${portId2}`);
+  // Retourner une distance très grande au lieu de Infinity pour que l'algo continue
+  return 9999;
+}
+
+// Algorithme du plus proche voisin pour le TSP utilisant les distances Neo4j
+function calculerItineraireOptimalTSP(portDepart, portsCibles) {
+  if (portsCibles.length === 0) return { ordre: [portDepart], distance: 0 };
+
+  const visites = [portDepart];
+  const nonVisites = [...portsCibles];
+  let distanceTotale = 0;
+  let currentPort = portDepart;
+
+  while (nonVisites.length > 0) {
+    let plusProche = null;
+    let distanceMin = Infinity;
+    let indexMin = -1;
+
+    nonVisites.forEach((port, index) => {
+      // Utiliser les distances Neo4j au lieu de Haversine
+      const distance = getDistanceEntrePortsNeo4j(currentPort.id, port.id);
+      if (distance < distanceMin) {
+        distanceMin = distance;
+        plusProche = port;
+        indexMin = index;
+      }
+    });
+
+    // Si aucun port n'a été trouvé (trajectData vide ou IDs invalides)
+    // utiliser le premier port non visité
+    if (plusProche === null) {
+      plusProche = nonVisites[0];
+      indexMin = 0;
+      distanceMin = getDistanceEntrePortsNeo4j(currentPort.id, plusProche.id);
+    }
+
+    visites.push(plusProche);
+    distanceTotale += distanceMin;
+    currentPort = plusProche;
+    nonVisites.splice(indexMin, 1);
+  }
+
+  // Retour à l'entrepôt - utiliser les distances Neo4j
+  const distanceRetour = getDistanceEntrePortsNeo4j(currentPort.id, portDepart.id);
+  distanceTotale += distanceRetour;
+  visites.push(portDepart);
+
+  return { ordre: visites, distance: distanceTotale };
+}
+
+// Calculer l'itinéraire optimal au clic du bouton
+document.getElementById("calculerItineraireBtn").addEventListener("click", async () => {
+  const hydravionId = document.getElementById("hydravionSelect").value;
+  const resultDiv = document.getElementById("itineraireResult");
+
+  if (!hydravionId) {
+    alert("Veuillez sélectionner un hydravion");
+    return;
+  }
+
+  // Charger les données si pas encore chargées
+  if (trajetsData.length === 0) {
+    await loadLivraisonsAndPorts();
+  }
+
+  // Récupérer la consommation de l'hydravion
+  const selectOption = document.getElementById("hydravionSelect").selectedOptions[0];
+  const consommationKm = parseFloat(selectOption.dataset.consommation) || 4.0;
+
+  // Filtrer les livraisons de cet hydravion
+  const livraisonsHydravion = livraisonsData.filter(
+    (l) => l.hydravion && l.hydravion.id === hydravionId
+  );
+
+  if (livraisonsHydravion.length === 0) {
+    resultDiv.innerHTML = "<p class='error'>❌ Aucune livraison pour cet hydravion</p>";
+    return;
+  }
+
+  // Récupérer l'entrepôt (PORT-000)
+  const entrepot = portsData.find((p) => p.id === "PORT-000");
+  if (!entrepot) {
+    resultDiv.innerHTML = "<p class='error'>❌ Entrepôt non trouvé</p>";
+    return;
+  }
+
+  // Extraire les ports d'arrivée uniques
+  const portsArriveeIds = [...new Set(livraisonsHydravion.map((l) => l.portArrivee.id))];
+  const portsCibles = portsArriveeIds
+    .map((id) => portsData.find((p) => p.id === id))
+    .filter((p) => p && p.id !== "PORT-000");
+
+  if (portsCibles.length === 0) {
+    resultDiv.innerHTML = "<p class='error'>❌ Aucun port de destination trouvé</p>";
+    return;
+  }
+
+  // Vérifier si trajetsData est chargé
+  if (trajetsData.length === 0) {
+    resultDiv.innerHTML = "<p class='error'>⚠️ Les données des trajets ne sont pas chargées. Vérifiez que le backend GraphQL retourne les trajets.</p>";
+    return;
+  }
+
+  // Calculer l'itinéraire optimal
+  const resultat = calculerItineraireOptimalTSP(entrepot, portsCibles);
+  const consommationTotale = resultat.distance * consommationKm;
+
+  // Afficher les résultats
+  const ordreNoms = resultat.ordre.map((p) => p.nom).join(" → ");
+
+  resultDiv.innerHTML = `
+    <h3>✅ Itinéraire Optimal Calculé</h3>
+    <div class="result-section">
+      <p><strong>🗺️ Ordre de visite :</strong></p>
+      <div class="itineraire-ordre">${ordreNoms}</div>
+    </div>
+    <div class="result-stats">
+      <div class="stat-item">
+        <span class="stat-label">📏 Distance totale</span>
+        <span class="stat-value">${resultat.distance.toFixed(2)} km</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">⛽ Consommation carburant</span>
+        <span class="stat-value">${consommationTotale.toFixed(2)} litres</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">📦 Nombre de livraisons</span>
+        <span class="stat-value">${livraisonsHydravion.length}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">🛬 Ports à visiter</span>
+        <span class="stat-value">${portsCibles.length}</span>
+      </div>
+    </div>
+    <div class="result-section">
+      <p><strong>📋 Détail des étapes :</strong></p>
+      <ol class="etapes-list">
+        ${resultat.ordre.map((port, index) => {
+    if (index === 0) {
+      return `<li class="etape-depart">🏭 <strong>Départ :</strong> ${port.nom}</li>`;
+    } else if (index === resultat.ordre.length - 1) {
+      return `<li class="etape-retour">🏭 <strong>Retour :</strong> ${port.nom}</li>`;
+    } else {
+      const livraisonsPort = livraisonsHydravion.filter((l) => l.portArrivee.id === port.id);
+      const clients = livraisonsPort.map((l) => l.commande?.client?.nom || "—").join(", ");
+      return `<li class="etape-livraison">📍 <strong>${port.nom}</strong> — ${livraisonsPort.length} livraison(s) (${clients})</li>`;
+    }
+  }).join("")}
+      </ol>
+    </div>
+  `;
+
+  // Afficher l'itinéraire sur la carte
+  afficherItineraireSurCarte(resultat.ordre);
+});
+
+// Fonction pour afficher l'itinéraire sur la carte
+function afficherItineraireSurCarte(portsOrdonnes) {
+  // Nettoyer les couches
+  portsLayer.clearLayers();
+  trajetsLayer.clearLayers();
+
+  const coordinates = portsOrdonnes.map((p) => [
+    p.coordonnees.latitude,
+    p.coordonnees.longitude,
+  ]);
+
+  // Dessiner les marqueurs
+  portsOrdonnes.forEach((port, index) => {
+    const iconColor =
+      port.id === "PORT-000"
+        ? "green"
+        : index === portsOrdonnes.length - 1
+          ? "green"
+          : "red";
+
+    const marker = L.marker([
+      port.coordonnees.latitude,
+      port.coordonnees.longitude,
+    ], {
+      icon: L.icon({
+        iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${iconColor}.png`,
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      }),
+    }).bindPopup(`<strong>${index + 1}. ${port.nom}</strong>`);
+    portsLayer.addLayer(marker);
+  });
+
+  // Dessiner la ligne de l'itinéraire
+  const polyline = L.polyline(coordinates, {
+    color: "#e74c3c",
+    weight: 3,
+    opacity: 0.8,
+    dashArray: "10, 5",
+  });
+  trajetsLayer.addLayer(polyline);
+
+  map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+}

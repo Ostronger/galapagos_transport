@@ -14,11 +14,15 @@ export class ProduitRepository {
   }
 
   async findAll(): Promise<Produit[]> {
-    return (await this.produitsCollection.find().toArray()) as unknown as Produit[];
+    return (await this.produitsCollection
+      .find()
+      .toArray()) as unknown as Produit[];
   }
 
   async findById(id: string): Promise<Produit | null> {
-    return (await this.produitsCollection.findOne({ id })) as unknown as Produit | null;
+    return (await this.produitsCollection.findOne({
+      id,
+    })) as unknown as Produit | null;
   }
 
   async updateStock(id: string, quantite: number): Promise<Produit | null> {

@@ -65,21 +65,26 @@
     </section>
 
     <section>
-      <h2>🎯 Optimisation d'Itinéraire</h2>
-      <p>Ports à livrer (IDs séparés par des virgules) :</p>
-      <input
-        type="text"
-        id="portsInput"
-        placeholder="PORT-001, PORT-002, PORT-004"
-        style="width: 100%; padding: 8px"
-      />
-      <br /><br />
-      <label for="hydravionSelect">Hydravion :</label>
-      <select id="hydravionSelect">
-        <option value="">-- Choisir --</option>
-      </select>
-      <br /><br />
-      <button id="optimiserItineraire">Calculer Itinéraire Optimal</button>
+      <h2>🎯 Optimisation d'Itinéraire par Hydravion</h2>
+
+      <!-- Sélection de l'hydravion -->
+      <div class="form-group">
+        <label for="hydravionSelect">Sélectionner un hydravion :</label>
+        <select id="hydravionSelect">
+          <option value="">-- Choisir un hydravion --</option>
+        </select>
+      </div>
+
+      <!-- Liste des livraisons de l'hydravion sélectionné -->
+      <div id="livraisonsHydravionContainer" style="display: none">
+        <h3>📦 Livraisons de l'hydravion</h3>
+        <div id="livraisonsHydravionList" class="livraisons-list"></div>
+        <button id="calculerItineraireBtn" class="btn-primary">
+          🗺️ Calculer l'itinéraire optimal
+        </button>
+      </div>
+
+      <!-- Résultats de l'optimisation -->
       <div id="itineraireResult"></div>
     </section>
 
