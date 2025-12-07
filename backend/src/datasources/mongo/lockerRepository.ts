@@ -5,18 +5,22 @@ export type Locker = {
   nom: string;
   capacite: number;
   occupe: number;
-  plein: boolean;
+  estVide: boolean;
 };
 
 export class LockerRepository {
-  private collection;
+  private lockersCollection;
+  private caissesCollection;
+  private produitsCollection;
 
   constructor(db: Db) {
-    this.collection = db.collection("lockers");
+    this.lockersCollection = db.collection("lockers");
+    this.caissesCollection = db.collection("caisses");
+    this.produitsCollection = db.collection("produits");
   }
 
   async findAll(): Promise<Locker[]> {
-    const docs = await this.collection.find().toArray();
+    const docs = await this.lockersCollection.find().toArray();
 
     return docs.map((doc) => {
       const capacite = Number(doc.capacite ?? 0);
@@ -27,8 +31,26 @@ export class LockerRepository {
         nom: doc.nom ?? doc.code ?? `Locker ${doc.id}`,
         capacite,
         occupe,
-        plein: occupe >= capacite && capacite > 0,
+        estVide: occupe >= capacite && capacite > 0,
       };
     });
+  }
+
+  async findByPortId(portId: string, filtreVide?: boolean) {
+    const query: any = { portId };
+
+    if (filtreVide !== undefined) {
+      query.estVide = filtreVide;
+    }
+
+    return this.lockersCollection.find(query).toArray();
+  }
+
+  async findCaisseById(caisseId: string) {
+    return this.caissesCollection.findOne({ id: caisseId });
+  }
+
+  async findAllProduits() {
+    return this.produitsCollection.find().toArray();
   }
 }

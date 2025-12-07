@@ -1,4 +1,4 @@
-import type { Session } from "neo4j-driver";
+import type { Driver, Session } from "neo4j-driver";
 
 export type HydravionPosition = {
   id: string;
@@ -18,14 +18,18 @@ export type HydravionPosition = {
 };
 
 export class HydravionNeo4jRepository {
-  constructor(private readonly sessionFactory: () => Session) {}
+  private driver: Driver;
+
+  constructor(driver: Driver) {
+    this.driver = driver;
+  }
 
   /**
    * Retourne l'état et le port éventuel de tous les hydravions.
    * Les infos "techniques" viennent de Mongo, ici on ne gère que le graphe.
    */
   async findAllStatusWithPort(): Promise<HydravionPosition[]> {
-    const session = this.sessionFactory();
+    const session = this.driver.session();
 
     try {
       const result = await session.run(
@@ -70,6 +74,35 @@ export class HydravionNeo4jRepository {
           },
         };
       });
+    } finally {
+      await session.close();
+    }
+  }
+
+  // Méthodes pour gérer les relations spatiales des hydravions dans Neo4j
+  // Par exemple, pour trouver les ports à proximité d'un hydravion
+  async findPortsProches(hydravionId: string, rayonKm: number = 100) {
+    const session = this.driver.session();
+    try {
+      const result = await session.run(
+        `
+        MATCH (h:Hydravion {id: $hydravionId})
+        MATCH (p:Port)
+        WITH h, p, point.distance(
+          point({latitude: h.latitude, longitude: h.longitude}),
+          point({latitude: p.latitude, longitude: p.longitude})
+        ) / 1000.0 AS distanceKm
+        WHERE distanceKm <= $rayonKm
+        RETURN p, distanceKm
+        ORDER BY distanceKm ASC
+      `,
+        { hydravionId, rayonKm }
+      );
+
+      return result.records.map((record) => ({
+        port: record.get("p").properties,
+        distanceKm: record.get("distanceKm"),
+      }));
     } finally {
       await session.close();
     }

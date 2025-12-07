@@ -1,0 +1,10 @@
+[
+  {
+    "id": "ENT-001",
+    "nom": "Entrepôt Central",
+    "coordonnees": { "latitude": -0.75, "longitude": -90.32 },
+    "ile": "ILE-001",
+    "capacite": 100,
+    "capaciteMax": 150
+  }
+]

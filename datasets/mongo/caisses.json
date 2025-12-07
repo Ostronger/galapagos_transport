@@ -1,20 +1,38 @@
 [
   {
     "id": "CAI-001",
-    "commandeId": "CMD-001",
-    "produitId": "PROD-001",
-    "lockerId": "LOC-002"
+    "nom": "Kit prélèvement eau",
+    "clientId": "CLI-001",
+    "produitId": "PROD-001"
   },
   {
     "id": "CAI-002",
-    "commandeId": "CMD-001",
-    "produitId": "PROD-004",
-    "lockerId": null
+    "nom": "Kit prélèvement air",
+    "clientId": "CLI-002",
+    "produitId": "PROD-007"
   },
   {
     "id": "CAI-003",
-    "commandeId": "CMD-002",
-    "produitId": "PROD-002",
-    "lockerId": "LOC-003"
+    "nom": "Kit prélèvement sol",
+    "clientId": "CLI-003",
+    "produitId": "PROD-006"
+  },
+  {
+    "id": "CAI-004",
+    "nom": "Kit balise GPS tortues",
+    "clientId": "CLI-004",
+    "produitId": "PROD-004"
+  },
+  {
+    "id": "CAI-005",
+    "nom": "Capteur température marine",
+    "clientId": "CLI-003",
+    "produitId": "PROD-003"
+  },
+  {
+    "id": "CAI-006",
+    "nom": "Drone surveillance",
+    "clientId": "CLI-003",
+    "produitId": "PROD-005"
   }
 ]

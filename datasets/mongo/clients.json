@@ -1,22 +1,27 @@
 [
   {
     "id": "CLI-001",
-    "nom": "Dr Elena Ramirez"
+    "nom": "Dr Elena Ramirez",
+    "historiqueCommandes": ["CMD-001", "CMD-003", "CMD-007"]
   },
   {
     "id": "CLI-002",
-    "nom": "Prof. Lucas Moretti"
+    "nom": "Prof. Lucas Moretti",
+    "historiqueCommandes": ["CMD-004", "CMD-006"]
   },
   {
     "id": "CLI-003",
-    "nom": "Dr Hana Watanabe"
+    "nom": "Dr Hana Watanabe",
+    "historiqueCommandes": ["CMD-002", "CMD-005"]
   },
   {
     "id": "CLI-004",
-    "nom": "Dr Samuel Thompson"
+    "nom": "Dr Samuel Thompson",
+    "historiqueCommandes": ["CMD-009"]
   },
   {
     "id": "CLI-005",
-    "nom": "Dr Aisha Ahmed"
+    "nom": "Dr Aisha Ahmed",
+    "historiqueCommandes": ["CMD-008"]
   }
 ]
