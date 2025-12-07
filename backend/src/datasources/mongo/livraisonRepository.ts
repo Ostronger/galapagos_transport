@@ -10,7 +10,7 @@ export interface Livraison {
   dateArrivee?: Date;
   statut: "PLANIFIEE" | "EN_COURS" | "LIVREE" | "ANNULEE";
   caisses: string[];
-  clientId?: string; // Optionnel, peuplé lors de la jointure
+  clientId?: string;
 }
 
 export class LivraisonRepository {
@@ -67,45 +67,5 @@ export class LivraisonRepository {
     return (await this.livraisonsCollection
       .aggregate(pipeline)
       .toArray()) as unknown as Livraison[];
-  }
-
-  async create(input: {
-    commandeId: string;
-    hydravionId: string;
-    portDepartId: string;
-    portArriveeId: string;
-  }): Promise<Livraison> {
-    const newLivraison: Livraison = {
-      id: `LIV-${Date.now()}`,
-      commandeId: input.commandeId,
-      hydravionId: input.hydravionId,
-      portDepartId: input.portDepartId,
-      portArriveeId: input.portArriveeId,
-      statut: "PLANIFIEE",
-      caisses: [],
-    };
-
-    await this.livraisonsCollection.insertOne(newLivraison);
-    return newLivraison;
-  }
-
-  async demarrer(id: string): Promise<Livraison | null> {
-    const result = await this.livraisonsCollection.findOneAndUpdate(
-      { id },
-      { $set: { statut: "EN_COURS", dateDepart: new Date() } },
-      { returnDocument: "after" }
-    );
-
-    return result as unknown as Livraison | null;
-  }
-
-  async terminer(id: string): Promise<Livraison | null> {
-    const result = await this.livraisonsCollection.findOneAndUpdate(
-      { id },
-      { $set: { statut: "LIVREE", dateArrivee: new Date() } },
-      { returnDocument: "after" }
-    );
-
-    return result as unknown as Livraison | null;
   }
 }

@@ -14,10 +14,9 @@ export interface Port {
   id: string;
   nom: string;
   coordonnees: Coordonnees;
-  ile: Ile; // <-- objet Ile
+  ile: Ile;
   capaciteHydravions: number;
   capaciteHydravionsMax: number;
-  // ...autres champs...
 }
 
 export class PortRepository {
@@ -31,16 +30,20 @@ export class PortRepository {
 
   async findAll() {
     const ports = await this.collection.find().toArray();
-    return Promise.all(ports.map((port) => this._populateIle(port)));
+    return Promise.all(
+      ports.map(async (port) => {
+        if (typeof port.ile === "string") {
+          const ile = await this.ileCollection.findOne({ id: port.ile });
+          port.ile = ile ? { id: ile.id, nom: ile.nom } : null;
+        }
+        return port;
+      })
+    );
   }
 
   async findById(id: string) {
     const port = await this.collection.findOne({ id });
     if (!port) return null;
-    return this._populateIle(port);
-  }
-
-  private async _populateIle(port: any) {
     if (typeof port.ile === "string") {
       const ile = await this.ileCollection.findOne({ id: port.ile });
       port.ile = ile ? { id: ile.id, nom: ile.nom } : null;

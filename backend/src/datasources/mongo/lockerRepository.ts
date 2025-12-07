@@ -5,7 +5,7 @@ export type Locker = {
   nom: string;
   capacite: number;
   occupe: number;
-  plein: boolean;
+  estVide: boolean;
 };
 
 export class LockerRepository {
@@ -31,7 +31,7 @@ export class LockerRepository {
         nom: doc.nom ?? doc.code ?? `Locker ${doc.id}`,
         capacite,
         occupe,
-        plein: occupe >= capacite && capacite > 0,
+        estVide: occupe >= capacite && capacite > 0,
       };
     });
   }

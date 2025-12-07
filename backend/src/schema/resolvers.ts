@@ -54,7 +54,7 @@ export const resolvers = {
       );
     },
 
-    // ========== PORTS & ÎLES ========== \\
+    // ========== PORTS & ILES ========== \\
     ports: async (parent: any, args: any, { portRepository }: Context) => {
       return await portRepository.findAll();
     },
@@ -117,7 +117,7 @@ export const resolvers = {
       return await commandeRepository.findEnCours();
     },
 
-    // ========== LIVRAISONS ==========
+    // ========== LIVRAISONS ========== \\
     livraisons: async (
       parent: any,
       args: any,
@@ -151,7 +151,7 @@ export const resolvers = {
       return await livraisonRepository.findByClientId(clientId);
     },
 
-    // ========== LOCKERS ==========
+    // ========== LOCKERS ========== \\
     lockersParPort: async (
       parent: any,
       { portId, filtreVide }: { portId: string; filtreVide?: boolean },
@@ -166,247 +166,16 @@ export const resolvers = {
       { lockerRepository }: Context
     ) => {
       const lockers = await lockerRepository.findAll();
-      return lockers.filter((l) => !l.plein);
+      return lockers.filter((l) => !l.estVide);
     },
 
-    lockersParIle: async (
-      parent: any,
-      { ileId }: { ileId: string },
-      { portRepository, lockerRepository }: Context
-    ) => {
-      const ports = await portRepository.findAll();
-      const portsIle = ports.filter((p) => p.ile?.id === ileId);
-      const lockers = [];
-
-      for (const port of portsIle) {
-        const lockersPort = await lockerRepository.findByPortId(port.id);
-        lockers.push(...lockersPort);
-      }
-
-      return lockers;
-    },
-
-    // ========== TRAJETS & OPTIMISATION ==========
+    // ========== TRAJETS & OPTIMISATION ========== \\
     trajets: async (parent: any, args: any, { trajetRepository }: Context) => {
       return await trajetRepository.findAll();
-    },
-
-    calculerItineraireOptimal: async (
-      parent: any,
-      {
-        hydravionId,
-        portsCibles,
-      }: { hydravionId: string; portsCibles: string[] },
-      { trajetRepository, hydravionRepository, portRepository }: Context
-    ) => {
-      // 1. Vérifier que l'hydravion existe
-      const hydravion = await hydravionRepository.findById(hydravionId);
-      if (!hydravion) throw new Error("Hydravion non trouvé");
-
-      // 2. Calculer l'itinéraire optimal
-      const resultat = await trajetRepository.calculerItineraireOptimal(
-        portsCibles
-      );
-
-      // 3. Récupérer les informations complètes des ports
-      const portsComplets = await Promise.all(
-        resultat.portsOrdonnes.map(async (p) => {
-          const port = await portRepository.findById(p.id);
-          return port || p;
-        })
-      );
-
-      // 4. Calculer la consommation de carburant
-      const carburantNecessaire =
-        resultat.distanceTotale * hydravion.consommationKm;
-
-      return {
-        portsOrdonnes: portsComplets,
-        distanceTotale: resultat.distanceTotale,
-        carburantNecessaire,
-      };
-    },
-
-    calculerItineraireOptimalParLivraisons: async (
-      parent: any,
-      {
-        hydravionId,
-        livraisonIds,
-      }: { hydravionId: string; livraisonIds: string[] },
-      {
-        trajetRepository,
-        hydravionRepository,
-        portRepository,
-        livraisonRepository,
-      }: Context
-    ) => {
-      // 1. Vérifier que l'hydravion existe
-      const hydravion = await hydravionRepository.findById(hydravionId);
-      if (!hydravion) throw new Error("Hydravion non trouvé");
-
-      // 2. Récupérer les livraisons
-      const livraisons = await Promise.all(
-        livraisonIds.map((id) => livraisonRepository.findById(id))
-      );
-
-      const livraisonsValides = livraisons.filter((l) => l !== null);
-      if (livraisonsValides.length === 0) {
-        throw new Error("Aucune livraison valide trouvée");
-      }
-
-      // 3. Extraire les ports de destination uniques
-      const portsCibles = Array.from(
-        new Set(livraisonsValides.map((l) => l!.portArriveeId))
-      );
-
-      // 4. Vérifier la capacité
-      let totalCaisses = 0;
-      for (const livraison of livraisonsValides) {
-        totalCaisses += livraison!.caisses.length;
-      }
-
-      if (totalCaisses > hydravion.capaciteMax) {
-        throw new Error(
-          `Capacité insuffisante: ${totalCaisses} caisses pour ${hydravion.capaciteMax} places disponibles`
-        );
-      }
-
-      // 5. Calculer l'itinéraire optimal
-      const resultat = await trajetRepository.calculerItineraireOptimal(
-        portsCibles
-      );
-
-      // 6. Récupérer les informations complètes des ports
-      const portsComplets = await Promise.all(
-        resultat.portsOrdonnes.map(async (p) => {
-          const port = await portRepository.findById(p.id);
-          return port || p;
-        })
-      );
-
-      // 7. Calculer la consommation de carburant
-      const carburantNecessaire =
-        resultat.distanceTotale * hydravion.consommationKm;
-
-      return {
-        portsOrdonnes: portsComplets,
-        distanceTotale: resultat.distanceTotale,
-        carburantNecessaire,
-        livraisons: livraisonsValides,
-        capaciteUtilisee: totalCaisses,
-        capaciteMax: hydravion.capaciteMax,
-      };
-    },
-
-    calculerConsommationCarburant: async (
-      parent: any,
-      { hydravionId, distance }: { hydravionId: string; distance: number },
-      { hydravionRepository }: Context
-    ) => {
-      const hydravion = await hydravionRepository.findById(hydravionId);
-      if (!hydravion) throw new Error("Hydravion non trouvé");
-
-      return hydravion.consommationKm * distance;
-    },
-  },
-
-  Mutation: {
-    // ========== COMMANDES ==========
-    creerCommande: async (
-      parent: any,
-      { input }: { input: { clientId: string; caisseIds: string[] } },
-      { commandeRepository }: Context
-    ) => {
-      return await commandeRepository.create(input);
-    },
-
-    annulerCommande: async (
-      parent: any,
-      { id }: { id: string },
-      { commandeRepository }: Context
-    ) => {
-      return await commandeRepository.updateStatut(id, "ANNULEE");
-    },
-
-    // ========== LIVRAISONS ==========
-    creerLivraison: async (
-      parent: any,
-      { input }: { input: any },
-      { livraisonRepository }: Context
-    ) => {
-      return await livraisonRepository.create(input);
-    },
-
-    demarrerLivraison: async (
-      parent: any,
-      { id }: { id: string },
-      { livraisonRepository }: Context
-    ) => {
-      return await livraisonRepository.demarrer(id);
-    },
-
-    terminerLivraison: async (
-      parent: any,
-      { id }: { id: string },
-      { livraisonRepository }: Context
-    ) => {
-      return await livraisonRepository.terminer(id);
-    },
-
-    // ========== HYDRAVIONS ==========
-    deplacerHydravion: async (
-      parent: any,
-      { id, portId }: { id: string; portId: string },
-      { hydravionRepository }: Context
-    ) => {
-      const hydravion = await hydravionRepository.findById(id);
-      if (!hydravion) throw new Error("Hydravion non trouvé");
-
-      // Mise à jour de la position
-      hydravion.positionPort = portId as any;
-      hydravion.etat = "PORT";
-
-      return hydravion;
-    },
-
-    ravitaillerHydravion: async (
-      parent: any,
-      { id, quantite }: { id: string; quantite: number },
-      { hydravionRepository }: Context
-    ) => {
-      const hydravion = await hydravionRepository.findById(id);
-      if (!hydravion) throw new Error("Hydravion non trouvé");
-
-      hydravion.niveauCarburant = Math.min(
-        hydravion.niveauCarburant + quantite,
-        hydravion.niveauCarburantMax
-      );
-
-      return hydravion;
-    },
-
-    // ========== LOCKERS ==========
-    assignerCaisseAuLocker: async (
-      parent: any,
-      { lockerId, caisseId }: { lockerId: string; caisseId: string },
-      { lockerRepository }: Context
-    ) => {
-      // Logique à implémenter
-      throw new Error("Non implémenté");
-    },
-
-    libererLocker: async (
-      parent: any,
-      { lockerId }: { lockerId: string },
-      { lockerRepository }: Context
-    ) => {
-      // Logique à implémenter
-      throw new Error("Non implémenté");
     },
   },
 
   // Resolvers pour les types imbriqués
-
   Hydravion: {
     positionPort: async (
       parent: any,

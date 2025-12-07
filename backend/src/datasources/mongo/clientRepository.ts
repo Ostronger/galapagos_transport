@@ -1,20 +1,20 @@
 import type { Db, Collection } from "mongodb";
 
-// Ajout de types minimaux pour clarifier les retours et la collection
 interface Client {
   id: string;
-  nom?: string;
-  [key: string]: any;
+  nom: string;
+  historiqueCommandes: string[];
 }
+
 interface Commande {
   id: string;
   clientId: string;
-  date?: Date | string;
-  [key: string]: any;
+  date: Date | string;
+  caisses: string[];
+  statut: "EN_PREPARATION" | "EN_COURS" | "LIVREE" | "ANNULEE" | "PLANIFIEE";
 }
 
 export class ClientRepository {
-  // typage des collections
   private collection: Collection<Client>;
   private commandesCollection: Collection<Commande>;
 

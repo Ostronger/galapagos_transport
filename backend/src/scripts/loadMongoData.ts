@@ -30,8 +30,7 @@ async function loadData() {
       "livraisons",
       "lockers",
       "ports",
-      "produits"
-
+      "produits",
     ];
 
     for (const collectionName of collections) {
@@ -48,35 +47,15 @@ async function loadData() {
         // Insérer les nouvelles données
         if (data.length > 0) {
           await db.collection(collectionName).insertMany(data);
-          console.log(`  ✅ ${data.length} documents insérés dans ${collectionName}`);
+          console.log(
+            `  ✅ ${data.length} documents insérés dans ${collectionName}`
+          );
         } else {
           console.log(`  ⚠️ Aucune donnée dans ${collectionName}`);
         }
       } catch (err: any) {
         console.error(`  ❌ Erreur pour ${collectionName}:`, err.message);
       }
-    }
-
-    // Charger l'entrepôt (fichier unique, pas un tableau)
-    console.log(`\n🏭 Chargement de l'entrepôt...`);
-    const entrepotFilePath = join(datasetsPath, "entrepot.json");
-    try {
-      const entrepotData = JSON.parse(readFileSync(entrepotFilePath, "utf-8"));
-      await db.collection("entrepots").deleteMany({});
-      console.log(`  ↳ Collection entrepots vidée`);
-      if (Array.isArray(entrepotData)) {
-        if (entrepotData.length > 0) {
-          await db.collection("entrepots").insertMany(entrepotData);
-          console.log(`  ✅ ${entrepotData.length} entrepôt(s) inséré(s)`);
-        } else {
-          console.log(`  ⚠️ Aucune donnée dans entrepot.json`);
-        }
-      } else {
-        await db.collection("entrepots").insertOne(entrepotData);
-        console.log(`  ✅ Entrepôt principal inséré`);
-      }
-    } catch (err: any) {
-      console.error(`  ❌ Erreur pour l'entrepôt:`, err.message);
     }
 
     console.log("\n🎉 Chargement des données terminé !");

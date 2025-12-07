@@ -33,15 +33,6 @@ export const typeDefs = gql`
     nom: String!
   }
 
-  type Entrepot {
-    id: ID!
-    nom: String!
-    coordonnees: Coordonnees!
-    ile: Ile!
-    capacite: Int!
-    capaciteMax: Int!
-  }
-
   type Port {
     id: ID!
     nom: String!
@@ -119,23 +110,6 @@ export const typeDefs = gql`
     dureeMinutes: Int!
   }
 
-  # Pour le résultat de l'algorithme d'optimisation
-  type Itineraire {
-    portsOrdonnes: [Port!]! # L'ordre de passage calculé
-    distanceTotale: Float!
-    carburantNecessaire: Float!
-  }
-
-  # Pour l'optimisation avec livraisons
-  type ItineraireAvecLivraisons {
-    portsOrdonnes: [Port!]!
-    distanceTotale: Float!
-    carburantNecessaire: Float!
-    livraisons: [Livraison!]! # Les livraisons dans l'ordre
-    capaciteUtilisee: Int! # Nombre de caisses transportées
-    capaciteMax: Int! # Capacité max de l'hydravion
-  }
-
   type Query {
     _health: String!
 
@@ -152,7 +126,6 @@ export const typeDefs = gql`
     # Produits & Stock
     produits: [Produit!]!
     produit(id: ID!): Produit
-    stocksProduits: [Produit!]!
 
     # Clients & Commandes
     clients: [Client!]!
@@ -169,51 +142,8 @@ export const typeDefs = gql`
     # Lockers
     lockersParPort(portId: ID!, filtreVide: Boolean): [Locker!]!
     lockersVides: [Locker!]!
-    lockersParIle(ileId: ID!): [Locker!]!
 
     # Trajets & Optimisation
     trajets: [Trajet!]!
-
-    # Calcule l'itinéraire optimal pour livrer une liste de ports
-    calculerItineraireOptimal(hydravionId: ID!, portsCibles: [ID!]!): Itineraire
-
-    # Calcule l'itinéraire optimal pour une liste de livraisons
-    calculerItineraireOptimalParLivraisons(
-      hydravionId: ID!
-      livraisonIds: [ID!]!
-    ): ItineraireAvecLivraisons
-
-    calculerConsommationCarburant(hydravionId: ID!, distance: Float!): Float!
-  }
-
-  type Mutation {
-    # Commandes
-    creerCommande(input: CommandeInput!): Commande!
-    annulerCommande(id: ID!): Commande!
-
-    # Livraisons
-    creerLivraison(input: LivraisonInput!): Livraison!
-    demarrerLivraison(id: ID!): Livraison!
-    terminerLivraison(id: ID!): Livraison!
-
-    # Hydravions
-    deplacerHydravion(id: ID!, portId: ID!): Hydravion!
-    ravitaillerHydravion(id: ID!, quantite: Float!): Hydravion!
-
-    # Lockers
-    assignerCaisseAuLocker(lockerId: ID!, caisseId: ID!): Locker!
-    libererLocker(lockerId: ID!): Locker!
-  }
-
-  input CommandeInput {
-    clientId: ID!
-    caisseIds: [ID!]!
-  }
-
-  input LivraisonInput {
-    commandeId: ID!
-    hydravionId: ID!
-    portDepartId: ID!
-    portArriveeId: ID!
   }
 `;

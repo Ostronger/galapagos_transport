@@ -24,19 +24,4 @@ export class ProduitRepository {
       id,
     })) as unknown as Produit | null;
   }
-
-  async updateStock(id: string, quantite: number): Promise<Produit | null> {
-    const result = await this.produitsCollection.findOneAndUpdate(
-      { id },
-      { $inc: { quantiteStocks: quantite } },
-      { returnDocument: "after" }
-    );
-
-    return result as unknown as Produit | null;
-  }
-
-  async getStockDisponible(id: string): Promise<number> {
-    const produit = await this.findById(id);
-    return produit?.quantiteStocks ?? 0;
-  }
 }
