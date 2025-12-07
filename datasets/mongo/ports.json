@@ -1,10 +1,23 @@
 [
   {
+    "id": "PORT-000",
+    "nom": "Entrepôt Central",
+    "coordonnees": {
+      "latitude": -0.90797,
+      "longitude": -89.55816
+    },
+    "ile": "ILE-003",
+    "capaciteHydravions": 1,
+    "capaciteHydravionsMax": 15,
+    "lockers": [],
+    "nbLockersVides": 0
+  },
+  {
     "id": "PORT-001",
     "nom": "Puerto Ayora",
     "coordonnees": {
-      "latitude": -0.74,
-      "longitude": -90.31
+      "latitude": -0.74677,
+      "longitude": -90.31186
     },
     "ile": "ILE-001",
     "capaciteHydravions": 2,
@@ -16,8 +29,8 @@
     "id": "PORT-002",
     "nom": "Puerto Villamil",
     "coordonnees": {
-      "latitude": -0.95,
-      "longitude": -91.01
+      "latitude": -0.9628,
+      "longitude": -90.95914
     },
     "ile": "ILE-002",
     "capaciteHydravions": 1,
@@ -29,8 +42,8 @@
     "id": "PORT-003",
     "nom": "Puerto Baquerizo Moreno",
     "coordonnees": {
-      "latitude": -0.9,
-      "longitude": -89.6
+      "latitude": -0.90013,
+      "longitude": -89.61077
     },
     "ile": "ILE-003",
     "capaciteHydravions": 3,
@@ -42,8 +55,8 @@
     "id": "PORT-004",
     "nom": "Puerto Velasco Ibarra",
     "coordonnees": {
-      "latitude": -1.25,
-      "longitude": -90.75
+      "latitude": -1.27429,
+      "longitude": -90.48887
     },
     "ile": "ILE-004",
     "capaciteHydravions": 2,
@@ -55,26 +68,13 @@
     "id": "PORT-005",
     "nom": "Puerto Chino",
     "coordonnees": {
-      "latitude": -0.92,
-      "longitude": -89.45
+      "latitude": -0.92617,
+      "longitude": -89.42935
     },
     "ile": "ILE-005",
     "capaciteHydravions": 1,
     "capaciteHydravionsMax": 2,
     "lockers": ["LOC-010"],
     "nbLockersVides": 1
-  },
-  {
-    "id": "PORT-003",
-    "nom": "Puerto Egas",
-    "coordonnees": {
-      "latitude": -0.27,
-      "longitude": -91.13
-    },
-    "ile": "ILE-004",
-    "capaciteHydravions": 4,
-    "capaciteHydravionsMax": 5,
-    "lockers": ["LOC-011", "LOC-012", "LOC-013", "LOC-014"],
-    "nbLockersVides": 3
   }
 ]

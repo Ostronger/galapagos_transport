@@ -1,0 +1,43 @@
+[
+  {
+    "id": "LIV-001",
+    "commandeId": "CMD-001",
+    "hydravionId": "HYD-001",
+    "portDepartId": "PORT-005",
+    "portArriveeId": "PORT-003",
+    "dateDepart": "2025-01-05T08:00:00Z",
+    "dateArrivee": "2025-01-05T10:30:00Z",
+    "statut": "LIVREE",
+    "caisses": ["CAI-001"]
+  },
+  {
+    "id": "LIV-002",
+    "commandeId": "CMD-002",
+    "hydravionId": "HYD-002",
+    "portDepartId": "PORT-005",
+    "portArriveeId": "PORT-001",
+    "dateDepart": "2025-01-10T12:00:00Z",
+    "statut": "EN_COURS",
+    "caisses": ["CAI-003", "CAI-005"]
+  },
+  {
+    "id": "LIV-003",
+    "commandeId": "CMD-003",
+    "hydravionId": "HYD-003",
+    "portDepartId": "PORT-005",
+    "portArriveeId": "PORT-001",
+    "dateDepart": "2025-01-12T07:00:00Z",
+    "dateArrivee": "2025-01-12T09:45:00Z",
+    "statut": "LIVREE",
+    "caisses": ["CAI-002"]
+  },
+  {
+    "id": "LIV-004",
+    "commandeId": "CMD-004",
+    "hydravionId": "HYD-004",
+    "portDepartId": "PORT-005",
+    "portArriveeId": "PORT-002",
+    "statut": "PLANIFIEE",
+    "caisses": ["CAI-004"]
+  }
+]

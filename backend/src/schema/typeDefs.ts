@@ -75,8 +75,16 @@ export const typeDefs = gql`
   type Commande {
     id: ID!
     date: Date!
-    produits: [Produit!]!
-    statut: String!
+    client: Client!
+    caisses: [Caisse!]!
+    statut: StatutCommande!
+  }
+
+  enum StatutCommande {
+    EN_PREPARATION
+    EN_COURS
+    LIVREE
+    ANNULEE
   }
 
   type Produit {
@@ -85,10 +93,29 @@ export const typeDefs = gql`
     quantiteStocks: Int!
   }
 
-  type Trajet {
+  type Livraison {
     id: ID!
+    commande: Commande!
+    hydravion: Hydravion!
     portDepart: Port!
     portArrivee: Port!
+    dateDepart: Date
+    dateArrivee: Date
+    statut: StatutLivraison!
+    caisses: [Caisse!]!
+  }
+
+  enum StatutLivraison {
+    PLANIFIEE
+    EN_COURS
+    LIVREE
+    ANNULEE
+  }
+
+  type Trajet {
+    id: ID!
+    portDepart: String!
+    portArrivee: String!
     distanceKm: Float!
     dureeMinutes: Int!
   }
@@ -103,28 +130,79 @@ export const typeDefs = gql`
   type Query {
     _health: String!
 
+    # Hydravions
     hydravions: [Hydravion!]!
+    hydravion(id: ID!): Hydravion
+    hydravionsDisponibles: [Hydravion!]!
+
+    # Ports & Îles
     ports: [Port!]!
+    port(id: ID!): Port
+    iles: [Ile!]!
+
+    # Produits & Stock
     produits: [Produit!]!
+    produit(id: ID!): Produit
+    stocksProduits: [Produit!]!
 
+    # Clients & Commandes
+    clients: [Client!]!
     client(id: ID!): Client
+    commande(id: ID!): Commande
+    commandesEnCours: [Commande!]!
 
-    # parcours optimise pour le trajet
-    calculerItineraires(
+    # Livraisons
+    livraisons: [Livraison!]!
+    livraisonsClient(clientId: ID!): [Livraison!]!
+    historiqueLivraisonsClient(clientId: ID!): [Livraison!]!
+    toutesLivraisonsClient(clientId: ID!): [Livraison!]!
+
+    # Lockers
+    lockersParPort(portId: ID!, filtreVide: Boolean): [Locker!]!
+    lockersVides: [Locker!]!
+    lockersParIle(ileId: ID!): [Locker!]!
+
+    # Trajets & Optimisation
+    trajets: [Trajet!]!
+    calculerItineraireOptimal(
       hydravionId: ID!
-      portCibleId: [ID!]!
+      portsCibles: [ID!]!
     ): Itineraire
 
-    # Savoir où sont les lockers vides sur une île
-    getLockersParPort(portId: ID!, filtreVide: Boolean): [Locker!]!
+    calculerConsommationCarburant(
+      hydravionId: ID!
+      distance: Float!
+    ): Float!
+  }
 
+  type Mutation {
+    # Commandes
+    creerCommande(input: CommandeInput!): Commande!
+    annulerCommande(id: ID!): Commande!
 
-#    clients: [Client!]!
-#    client(id: ID!): Client
-#    ports: [Port!]!
-#    trajets: [Trajet!]!
-#    trajetsEntrePorts(portDepartId: ID!, portArriveeId: ID!): [Trajet!]!
-#    hydravions: [Hydravion!]!
-#    lockers: [Locker!]!
+    # Livraisons
+    creerLivraison(input: LivraisonInput!): Livraison!
+    demarrerLivraison(id: ID!): Livraison!
+    terminerLivraison(id: ID!): Livraison!
+
+    # Hydravions
+    deplacerHydravion(id: ID!, portId: ID!): Hydravion!
+    ravitaillerHydravion(id: ID!, quantite: Float!): Hydravion!
+
+    # Lockers
+    assignerCaisseAuLocker(lockerId: ID!, caisseId: ID!): Locker!
+    libererLocker(lockerId: ID!): Locker!
+  }
+
+  input CommandeInput {
+    clientId: ID!
+    caisseIds: [ID!]!
+  }
+
+  input LivraisonInput {
+    commandeId: ID!
+    hydravionId: ID!
+    portDepartId: ID!
+    portArriveeId: ID!
   }
 `;

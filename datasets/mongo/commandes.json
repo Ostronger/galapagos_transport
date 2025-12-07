@@ -1,14 +1,37 @@
 [
   {
     "id": "CMD-001",
+    "clientId": "CLI-001",
     "date": "2025-01-05T10:30:00Z",
-    "produits": ["PROD-001"],
+    "caisses": ["CAI-001"],
     "statut": "LIVREE"
   },
   {
     "id": "CMD-002",
     "clientId": "CLI-003",
     "date": "2025-01-10T14:00:00Z",
-    "caisses": ["CAI-003"]
+    "caisses": ["CAI-003", "CAI-005"],
+    "statut": "EN_COURS"
+  },
+  {
+    "id": "CMD-003",
+    "clientId": "CLI-001",
+    "date": "2025-01-12T09:00:00Z",
+    "caisses": ["CAI-002"],
+    "statut": "LIVREE"
+  },
+  {
+    "id": "CMD-004",
+    "clientId": "CLI-002",
+    "date": "2025-01-15T16:45:00Z",
+    "caisses": ["CAI-004"],
+    "statut": "EN_PREPARATION"
+  },
+  {
+    "id": "CMD-005",
+    "clientId": "CLI-003",
+    "date": "2025-01-18T11:20:00Z",
+    "caisses": ["CAI-006"],
+    "statut": "EN_COURS"
   }
 ]

@@ -14,6 +14,9 @@ import { TrajetRepository } from "./datasources/neo4j/trajetRepository.js";
 import { HydravionRepository } from "./datasources/mongo/hydravionRepository.js";
 import { HydravionNeo4jRepository } from "./datasources/neo4j/hydravionRepository.js";
 import { LockerRepository } from "./datasources/mongo/lockerRepository.js";
+import { CommandeRepository } from "./datasources/mongo/commandeRepository.js";
+import { ProduitRepository } from "./datasources/mongo/produitRepository.js";
+import { LivraisonRepository } from "./datasources/mongo/livraisonRepository.js";
 
 async function startServer() {
   console.log("Démarrage du serveur GraphQL...");
@@ -32,6 +35,9 @@ async function startServer() {
     const hydravionRepository = new HydravionRepository(mongoDb);
     const hydravionNeo4jRepository = new HydravionNeo4jRepository(neo4jDriver);
     const lockerRepository = new LockerRepository(mongoDb);
+    const commandeRepository = new CommandeRepository(mongoDb);
+    const produitRepository = new ProduitRepository(mongoDb);
+    const livraisonRepository = new LivraisonRepository(mongoDb);
 
     const server = new ApolloServer({ // Création de l'instance Apollo Server
       typeDefs,
@@ -49,6 +55,9 @@ async function startServer() {
         hydravionRepository,
         hydravionNeo4jRepository,
         lockerRepository,
+        commandeRepository,
+        produitRepository,
+        livraisonRepository,
       }),
     });
 

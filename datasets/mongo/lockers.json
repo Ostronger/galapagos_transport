@@ -1,32 +1,62 @@
 [
   {
     "id": "LOC-001",
+    "portId": "PORT-001",
     "estVide": false,
-    "contenu": "CAI-001"
+    "caisseId": "CAI-001"
   },
   {
     "id": "LOC-002",
+    "portId": "PORT-001",
     "estVide": true,
-    "contenu": null
+    "caisseId": null
   },
   {
     "id": "LOC-003",
+    "portId": "PORT-002",
     "estVide": false,
-    "contenu": "CAI-002"
+    "caisseId": "CAI-002"
   },
   {
     "id": "LOC-004",
+    "portId": "PORT-002",
     "estVide": false,
-    "contenu": "CAI-002"
+    "caisseId": "CAI-003"
   },
   {
     "id": "LOC-005",
+    "portId": "PORT-003",
     "estVide": true,
-    "contenu": null
+    "caisseId": null
   },
   {
     "id": "LOC-006",
+    "portId": "PORT-003",
     "estVide": false,
-    "contenu": "CAI-003"
+    "caisseId": "CAI-004"
+  },
+  {
+    "id": "LOC-007",
+    "portId": "PORT-003",
+    "estVide": true,
+    "caisseId": null
+  },
+  {
+    "id": "LOC-008",
+    "portId": "PORT-004",
+    "estVide": true,
+    "caisseId": null
+  },
+  {
+    "id": "LOC-009",
+    "portId": "PORT-005",
+    "estVide": false,
+    "caisseId": "CAI-005"
+  },
+  {
+    "id": "LOC-010",
+    "portId": "PORT-005",
+    "estVide": true,
+    "caisseId": null
   }
 ]

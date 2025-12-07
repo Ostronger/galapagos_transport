@@ -1,4 +1,5 @@
 import type { Db } from "mongodb";
+import { Port } from "./portRepository.js";
 
 export interface Hydravion {
   id: string;
@@ -9,7 +10,7 @@ export interface Hydravion {
   niveauCarburant: number;
   niveauCarburantMax: number;
   etat: string;
-  positionPortId?: string;
+  positionPort?: Port | null;
   positionGPS?: {
     latitude: number;
     longitude: number;

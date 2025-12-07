@@ -63,4 +63,21 @@ export class PortNeo4jRepository {
       await session.close();
     }
   }
+
+  async findAllIles() {
+    const session = this.driver.session();
+    try {
+      const result = await session.run(`
+        MATCH (i:Ile)
+        RETURN i
+      `);
+
+      return result.records.map((record) => {
+        const ile = record.get("i").properties;
+        return { ...ile };
+      });
+    } finally {
+      await session.close();
+    }
+  }
 }

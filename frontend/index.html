@@ -1,68 +1,96 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <title>Galapagos Transport — Frontend</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Galapagos Transport — Frontend</title>
 
-  <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css" />
 
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-</head>
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+  </head>
 
-<body>
+  <body>
+    <h1>🚁 Galapagos Transport</h1>
 
-  <h1>Galapagos Transport</h1>
+    <section>
+      <h2>🔌 Connexion Backend</h2>
+      <button id="checkHealth">Vérifier Backend</button>
+      <p id="healthResult"></p>
+    </section>
 
-  <!-- === Carte en premier === -->
-  <section>
-    <h2>Carte (Ports + Trajets + Hydravions)</h2>
-    <button id="loadPorts">Afficher les ports</button>
-    <button id="loadTrajets">Afficher les trajets</button>
-    <button id="loadHydravions">Afficher les hydravions</button>
-    <div id="map"></div>
-  </section>
+    <section>
+      <h2>🗺️ Carte des Îles Galapagos</h2>
+      <button id="loadMap">Charger Ports et Hydravions</button>
+      <div id="map"></div>
+    </section>
 
-  <!-- === Santé du backend === -->
-  <section>
-    <h2>Tester la connexion au backend</h2>
-    <button id="checkHealth">Vérifier Backend</button>
-    <p id="healthResult"></p>
-  </section>
+    <section>
+      <h2>✈️ Flotte d'Hydravions</h2>
+      <button id="loadHydravions">Charger Hydravions</button>
+      <ul id="hydravionsList"></ul>
+    </section>
 
-  <!-- === Liste des ports === -->
-  <section>
-    <h2>Liste des ports</h2>
-    <ul id="portsList"></ul>
-  </section>
+    <section>
+      <h2>📦 Disponibilité des Lockers</h2>
+      <button id="loadLockers">Charger Disponibilité</button>
+      <ul id="lockersList"></ul>
+    </section>
 
-  <!-- === Liste des hydravions === -->
-  <section>
-    <h2>Liste des hydravions</h2>
-    <ul id="hydravionsList"></ul>
-  </section>
+    <section>
+      <h2>📊 Stocks de Produits</h2>
+      <button id="loadProduits">Charger Stocks</button>
+      <ul id="produitsList"></ul>
+    </section>
 
-  <!-- === Liste des clients === -->
-  <section>
-    <h2>Liste des clients</h2>
-    <button id="loadClients">Charger les clients</button>
-    <ul id="clientsList"></ul>
-  </section>
+    <section>
+      <h2>👥 Clients</h2>
+      <button id="loadClients">Charger Clients</button>
+      <ul id="clientsList"></ul>
+    </section>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+    <section>
+      <h2>🚚 Historique de Livraison</h2>
+      <label for="clientSelect">Sélectionner un client :</label>
+      <select id="clientSelect">
+        <option value="">-- Choisir --</option>
+      </select>
+      <button id="loadHistorique">Voir Historique</button>
+      <ul id="historiqueListe"></ul>
+    </section>
 
-  <!-- Votre script -->
-  <script src="script.js"></script>
+    <section>
+      <h2>🎯 Optimisation d'Itinéraire</h2>
+      <p>Ports à livrer (IDs séparés par des virgules) :</p>
+      <input
+        type="text"
+        id="portsInput"
+        placeholder="PORT-001, PORT-002, PORT-004"
+        style="width: 100%; padding: 8px"
+      />
+      <br /><br />
+      <label for="hydravionSelect">Hydravion :</label>
+      <select id="hydravionSelect">
+        <option value="">-- Choisir --</option>
+      </select>
+      <br /><br />
+      <button id="optimiserItineraire">Calculer Itinéraire Optimal</button>
+      <div id="itineraireResult"></div>
+    </section>
 
-</body>
+    <!-- Leaflet JS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <!-- Votre script -->
+    <script src="script.js"></script>
+  </body>
 </html>

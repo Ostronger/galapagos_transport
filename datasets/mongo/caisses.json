@@ -2,16 +2,37 @@
   {
     "id": "CAI-001",
     "nom": "Kit prélèvement eau",
-    "client": "CLI-001"
+    "clientId": "CLI-001",
+    "produitId": "PROD-001"
   },
   {
     "id": "CAI-002",
     "nom": "Kit prélèvement air",
-    "client": "CLI-002"
+    "clientId": "CLI-002",
+    "produitId": "PROD-007"
   },
   {
     "id": "CAI-003",
     "nom": "Kit prélèvement sol",
-    "client": "CLI-003"
+    "clientId": "CLI-003",
+    "produitId": "PROD-006"
+  },
+  {
+    "id": "CAI-004",
+    "nom": "Kit balise GPS tortues",
+    "clientId": "CLI-004",
+    "produitId": "PROD-004"
+  },
+  {
+    "id": "CAI-005",
+    "nom": "Capteur température marine",
+    "clientId": "CLI-003",
+    "produitId": "PROD-003"
+  },
+  {
+    "id": "CAI-006",
+    "nom": "Drone surveillance",
+    "clientId": "CLI-003",
+    "produitId": "PROD-005"
   }
 ]

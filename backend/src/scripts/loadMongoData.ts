@@ -27,9 +27,11 @@ async function loadData() {
       "commandes",
       "hydravions",
       "iles",
+      "livraisons",
       "lockers",
       "ports",
       "produits"
+
     ];
 
     for (const collectionName of collections) {

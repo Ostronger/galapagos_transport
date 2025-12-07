@@ -1,66 +1,81 @@
 [
   {
     "id": "HYD-001",
-    "modele": "Twin Otter DHC-6",
+    "modele": "Cargo Bob",
     "capaciteActuelle": 10,
-    "capaciteMax": 20,
+    "capaciteMax": 50,
     "consommationKm": 4.2,
     "niveauCarburant": 200,
     "niveauCarburantMax": 400,
     "etat": "PORT",
-    "positionPort": "PORT-001",
+    "positionPort": {
+      "id": "PORT-001",
+      "nom": "Port de Isabela"
+    },
     "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
     "caisses": null
   },
   {
     "id": "HYD-002",
-    "modele": "Cessna Caravan 208",
+    "modele": "Cargo Bob",
     "capaciteActuelle": 5,
-    "capaciteMax": 15,
+    "capaciteMax": 50,
     "consommationKm": 3.5,
     "niveauCarburant": 150,
     "niveauCarburantMax": 300,
-    "etat": "EN_VOL",
-    "positionPort": "PORT-002",
+    "etat": "PORT",
+    "positionPort": {
+      "id": "PORT-002",
+      "nom": "Port de Puerto Ayora"
+    },
     "positionGPS": { "latitude": -1.0, "longitude": -91.0 },
     "caisses": ["CAI-001", "CAI-002"]
   },
   {
     "id": "HYD-003",
-    "modele": "Grumman G-21 Goose",
+    "modele": "Avenger",
     "capaciteActuelle": 8,
-    "capaciteMax": 12,
+    "capaciteMax": 150,
     "consommationKm": 3.9,
     "niveauCarburant": 100,
     "niveauCarburantMax": 250,
     "etat": "PORT",
-    "positionPort": "PORT-001",
+    "positionPort": {
+      "id": "PORT-002",
+      "nom": "Port de Santa Cruz"
+    },
     "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
     "caisses": ["CAI-003"]
   },
   {
     "id": "HYD-004",
-    "modele": "Kodiak 100 Amphibian",
+    "modele": "Avenger",
     "capaciteActuelle": 15,
-    "capaciteMax": 18,
+    "capaciteMax": 150,
     "consommationKm": 4.0,
     "niveauCarburant": 180,
     "niveauCarburantMax": 360,
-    "etat": "EN_VOL",
-    "positionPort": "PORT-003",
+    "etat": "ENTREPOT",
+    "positionPort": {
+      "id": "PORT-000",
+      "nom": "Entrepôt Central"
+    },
     "positionGPS": { "latitude": -1.05, "longitude": -91.05 },
     "caisses": null
   },
   {
     "id": "HYD-005",
-    "modele": "De Havilland Canada DHC-3 Otter",
+    "modele": "Avenger",
     "capaciteActuelle": 12,
-    "capaciteMax": 16,
+    "capaciteMax": 150,
     "consommationKm": 4.1,
     "niveauCarburant": 220,
     "niveauCarburantMax": 440,
     "etat": "PORT",
-    "positionPort": "PORT-001",
+    "positionPort": {
+      "id": "PORT-003",
+      "nom": "Port de Isabela"
+    },
     "positionGPS": { "latitude": -0.95, "longitude": -90.97 },
     "caisses": null
   }
