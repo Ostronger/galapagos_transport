@@ -59,54 +59,69 @@ CREATE (:Port {id: "PORT-004", nom: "Darwin Bay", latitude: 0.320, longitude: -8
 // ========== CRÉATION DES TRAJETS (RELATIONS RELIE_A) ==========
 
 // Connexions depuis Puerto Baquerizo Moreno (Entrepôt - ILE-003)
-MATCH (p1:Port {id: "PORT-005"}), (p2:Port {id: "PORT-001"})
+MATCH (p1:Port {id: "PORT-005"}) 
+MATCH (p2:Port {id: "PORT-001"})
 CREATE (p1)-[:RELIE_A {distance: 72}]->(p2), (p2)-[:RELIE_A {distance: 72}]->(p1);
 
-MATCH (p1:Port {id: "PORT-005"}), (p2:Port {id: "PORT-002"})
+MATCH (p1:Port {id: "PORT-005"}) 
+MATCH (p2:Port {id: "PORT-002"})
 CREATE (p1)-[:RELIE_A {distance: 145}]->(p2), (p2)-[:RELIE_A {distance: 145}]->(p1);
 
-MATCH (p1:Port {id: "PORT-005"}), (p2:Port {id: "PORT-007"})
+MATCH (p1:Port {id: "PORT-005"}) 
+MATCH (p2:Port {id: "PORT-007"})
 CREATE (p1)-[:RELIE_A {distance: 95}]->(p2), (p2)-[:RELIE_A {distance: 95}]->(p1);
 
-MATCH (p1:Port {id: "PORT-005"}), (p2:Port {id: "PORT-012"})
+MATCH (p1:Port {id: "PORT-005"})
+MATCH (p2:Port {id: "PORT-012"})
 CREATE (p1)-[:RELIE_A {distance: 88}]->(p2), (p2)-[:RELIE_A {distance: 88}]->(p1);
 
 // Connexions Santa Cruz (PORT-001)
-MATCH (p1:Port {id: "PORT-001"}), (p2:Port {id: "PORT-002"})
+MATCH (p1:Port {id: "PORT-001"})
+MATCH (p2:Port {id: "PORT-002"})
 CREATE (p1)-[:RELIE_A {distance: 85}]->(p2), (p2)-[:RELIE_A {distance: 85}]->(p1);
 
-MATCH (p1:Port {id: "PORT-001"}), (p2:Port {id: "PORT-007"})
+MATCH (p1:Port {id: "PORT-001"}) 
+MATCH (p2:Port {id: "PORT-007"})
 CREATE (p1)-[:RELIE_A {distance: 50}]->(p2), (p2)-[:RELIE_A {distance: 50}]->(p1);
 
-MATCH (p1:Port {id: "PORT-001"}), (p2:Port {id: "PORT-003"})
+MATCH (p1:Port {id: "PORT-001"})
+MATCH (p2:Port {id: "PORT-003"})
 CREATE (p1)-[:RELIE_A {distance: 90}]->(p2), (p2)-[:RELIE_A {distance: 90}]->(p1);
 
-MATCH (p1:Port {id: "PORT-001"}), (p2:Port {id: "PORT-004"})
+MATCH (p1:Port {id: "PORT-001"})
+MATCH (p2:Port {id: "PORT-004"})
 CREATE (p1)-[:RELIE_A {distance: 180}]->(p2), (p2)-[:RELIE_A {distance: 180}]->(p1);
 
 // Connexions Isabela (PORT-002)
-MATCH (p1:Port {id: "PORT-002"}), (p2:Port {id: "PORT-009"})
+MATCH (p1:Port {id: "PORT-002"})
+MATCH (p2:Port {id: "PORT-009"})
 CREATE (p1)-[:RELIE_A {distance: 78}]->(p2), (p2)-[:RELIE_A {distance: 78}]->(p1);
 
-MATCH (p1:Port {id: "PORT-002"}), (p2:Port {id: "PORT-003"})
+MATCH (p1:Port {id: "PORT-002"})
+MATCH (p2:Port {id: "PORT-003"})
 CREATE (p1)-[:RELIE_A {distance: 95}]->(p2), (p2)-[:RELIE_A {distance: 95}]->(p1);
 
-MATCH (p1:Port {id: "PORT-002"}), (p2:Port {id: "PORT-011"})
+MATCH (p1:Port {id: "PORT-002"})
+MATCH (p2:Port {id: "PORT-011"})
 CREATE (p1)-[:RELIE_A {distance: 55}]->(p2), (p2)-[:RELIE_A {distance: 55}]->(p1);
 
 // Connexions Santiago (PORT-003)
-MATCH (p1:Port {id: "PORT-003"}), (p2:Port {id: "PORT-009"})
+MATCH (p1:Port {id: "PORT-003"})
+MATCH (p2:Port {id: "PORT-009"})
 CREATE (p1)-[:RELIE_A {distance: 45}]->(p2), (p2)-[:RELIE_A {distance: 45}]->(p1);
 
-MATCH (p1:Port {id: "PORT-003"}), (p2:Port {id: "PORT-010"})
+MATCH (p1:Port {id: "PORT-003"})
+MATCH (p2:Port {id: "PORT-010"})
 CREATE (p1)-[:RELIE_A {distance: 18}]->(p2), (p2)-[:RELIE_A {distance: 18}]->(p1);
 
 // Connexions Floreana (PORT-007, PORT-008)
-MATCH (p1:Port {id: "PORT-007"}), (p2:Port {id: "PORT-008"})
+MATCH (p1:Port {id: "PORT-007"})
+MATCH (p2:Port {id: "PORT-008"})
 CREATE (p1)-[:RELIE_A {distance: 8}]->(p2), (p2)-[:RELIE_A {distance: 8}]->(p1);
 
 // Connexion Genovesa (PORT-004) - île éloignée
-MATCH (p1:Port {id: "PORT-004"}), (p2:Port {id: "PORT-001"})
+MATCH (p1:Port {id: "PORT-004"})
+MATCH (p2:Port {id: "PORT-001"})
 CREATE (p1)-[:RELIE_A {distance: 180}]->(p2), (p2)-[:RELIE_A {distance: 180}]->(p1);
 
 // ========== VÉRIFICATION ==========

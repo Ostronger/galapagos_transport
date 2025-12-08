@@ -2,7 +2,7 @@ import "dotenv/config"; // Charger les variables d'environnement dès le départ
 import { ApolloServer } from "@apollo/server"; // Apollo Server principal
 import { startStandaloneServer } from "@apollo/server/standalone"; // Pour démarrer le serveur
 
-import neo4j, { Driver } from "neo4j-driver"; //
+import neo4j, { Driver } from "neo4j-driver"; // 
 import { typeDefs } from "./schema/typeDefs.js";
 import { resolvers } from "./schema/resolvers.js";
 import { connectMongo } from "./config/mongo.js";
