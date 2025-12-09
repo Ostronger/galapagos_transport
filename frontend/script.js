@@ -51,6 +51,10 @@ document.getElementById("checkHealth").addEventListener("click", async () => {
 
 // === Carte : Ports et Hydravions ===
 document.getElementById("loadMap").addEventListener("click", async () => {
+  portsLayer.clearLayers();
+  hydravionsLayer.clearLayers();
+  trajetsLayer.clearLayers();
+
   const result = await runQuery(`
     query {
       ports {
@@ -76,6 +80,7 @@ document.getElementById("loadMap").addEventListener("click", async () => {
           longitude
         }
         positionPort {
+          id
           nom
         }
       }
@@ -83,16 +88,16 @@ document.getElementById("loadMap").addEventListener("click", async () => {
   `);
 
   // Mise à jour des marqueurs ports
-  portsLayer.clearLayers();
   result.data.ports.forEach((port) => {
     const lat = port.coordonnees.latitude;
     const lng = port.coordonnees.longitude;
+    const color = port.id === "PORT-000" ? "green" : "blue";
 
     if (lat != null && lng != null) {
       const marker = L.marker([lat, lng], {
         icon: L.icon({
           iconUrl:
-            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+            `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
           shadowUrl:
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
           iconSize: [25, 41],
@@ -112,42 +117,78 @@ document.getElementById("loadMap").addEventListener("click", async () => {
 
   // Mise à jour des marqueurs hydravions
   hydravionsLayer.clearLayers();
+
+  // Fonction helper pour créer le marqueur
+  const createHydravionMarker = (hydravion, lat, lng) => {
+    const marker = L.marker([lat, lng], {
+      icon: L.icon({
+        iconUrl:
+          "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      }),
+    }).bindPopup(
+      `<strong>✈️ ${hydravion.modele}</strong><br/>
+       ID: ${hydravion.id}<br/>
+       Statut: ${hydravion.etat}<br/>
+       Capacité: ${hydravion.capaciteActuelle}/${hydravion.capaciteMax} caisses<br/>
+       (${lat.toFixed(4)}, ${lng.toFixed(4)})`
+    );
+    hydravionsLayer.addLayer(marker);
+  };
+
+  // Regrouper les hydravions par port
+  const hydravionsByPort = {};
+  const hydravionsEnVol = [];
+
   result.data.hydravions.forEach((hydravion) => {
-    let lat, lng;
-
-    // Utiliser positionGPS en priorité, sinon positionPort
-    if (hydravion.positionGPS && hydravion.positionGPS.latitude != null) {
-      lat = hydravion.positionGPS.latitude;
-      lng = hydravion.positionGPS.longitude;
-    } else if (hydravion.positionPort) {
-      // Si l'hydravion est au port, on ne l'affiche pas (évite la superposition)
-      return;
-    } else {
-      return;
+    if (hydravion.positionPort && hydravion.positionPort.id) {
+      const portId = hydravion.positionPort.id;
+      if (!hydravionsByPort[portId]) {
+        hydravionsByPort[portId] = [];
+      }
+      hydravionsByPort[portId].push(hydravion);
+    } else if (hydravion.positionGPS && hydravion.positionGPS.latitude != null) {
+      hydravionsEnVol.push(hydravion);
     }
+  });
 
-    if (lat != null && lng != null) {
-      const marker = L.marker([lat, lng], {
-        icon: L.icon({
-          iconUrl:
-            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-          shadowUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        }),
-      }).bindPopup(
-        `<strong>✈️ ${hydravion.modele}</strong><br/>
-         ID: ${hydravion.id}<br/>
-         Statut: ${hydravion.etat}<br/>
-         Capacité: ${hydravion.capaciteActuelle}/${hydravion.capaciteMax
-        } caisses<br/>
-         (${lat.toFixed(4)}, ${lng.toFixed(4)})`
-      );
-      hydravionsLayer.addLayer(marker);
-    }
+  // 1. Afficher les hydravions qui sont au port (en cercle autour)
+  Object.keys(hydravionsByPort).forEach((portId) => {
+    const port = result.data.ports.find((p) => p.id === portId);
+    if (!port || !port.coordonnees) return;
+
+    const baseLat = port.coordonnees.latitude;
+    const baseLng = port.coordonnees.longitude;
+    const planes = hydravionsByPort[portId];
+    const count = planes.length;
+
+    // Rayon du cercle autour du port (en degrés). 0.03 est un bon compromis visuel.
+    const radius = 0.01;
+
+    planes.forEach((hydravion, index) => {
+      // Répartition en cercle
+      const angle = (index / count) * 2 * Math.PI;
+      // On décale lat/lng
+      const lat = baseLat + radius * Math.cos(angle);
+      const lng = baseLng + radius * Math.sin(angle);
+
+      console.log(`Hydravion ${hydravion.id} positionné autour du port ${port.nom}`);
+      createHydravionMarker(hydravion, lat, lng);
+    });
+  });
+
+  // 2. Afficher les hydravions en vol
+  hydravionsEnVol.forEach((hydravion) => {
+    createHydravionMarker(
+      hydravion,
+      hydravion.positionGPS.latitude,
+      hydravion.positionGPS.longitude
+    );
   });
 
   // Recadrer la carte
@@ -741,6 +782,7 @@ function afficherItineraireSurCarte(portsOrdonnes) {
   // Nettoyer les couches
   portsLayer.clearLayers();
   trajetsLayer.clearLayers();
+  hydravionsLayer.clearLayers();
 
   const coordinates = portsOrdonnes.map((p) => [
     p.coordonnees.latitude,
